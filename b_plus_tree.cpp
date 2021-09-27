@@ -18,7 +18,7 @@ template <typename T>
 int TreeNode<T>::getMaxKeys()
 {
     int maxKeys = 0;
-    size_t sum = 0;
+    size_t sum = sizeof(Pointer);
 
     while (sum + sizeof(Pointer) + sizeof(Key) <= this->blockSize)
     {
