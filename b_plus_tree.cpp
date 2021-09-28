@@ -12,6 +12,7 @@ TreeNode<T>::TreeNode(size_t blockSize)
     this->keys = new Keys[maxKeys];
 
     this->numOfKeys = 0;
+    this->numOfBlocks ++;
 }
 
 template <typename T>
