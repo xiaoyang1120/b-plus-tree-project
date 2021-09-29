@@ -11,11 +11,15 @@ struct record
 
 define 2 types of block storage,
 class DataBlock: numOfRecords, array of RecordSlot{bool, Record(18B)}
+@update: directly add the boolean flag in Record class.
 when building a data block object, we calculate the max number of records it can store in advance. We allocate array-like slots beforehand.
+@update: Record objects are maintained in a DataBlock object as a list.
 
 TODO: 
 c++ memory allocation;
-define Record struct, RecordSlot class, DataBlock clsas(including maxNumOfRecords function)
+define Record struct, RecordSlot class, DataBlock class(including maxNumOfRecords function)
+@update:change to record class with a bool variable
+Block class have a static int c=variable numOfBlocks
 B+ tree(root node, non leaf node, leaf node)
 BPtreeBlock/Node structure: calculation of N
     leaf node: numOfKeys, pointer array(store pointers to DataBlock), key array, pointer to next leaf
