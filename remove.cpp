@@ -7,11 +7,11 @@
 
 int order = max
 
-node*  BPlusTree::delete (node *root, int key) {
+node*  BPlusTree::delete (node *root, int key, int *numNodeDeleted, int *numNodeUpdated) {
   node *key_leaf = NULL;
   record *key_record = NULL;
-  int numNodeDeleted = 0;
-  int numNodeUpdated = 0;
+  //int numNodeDeleted = 0;
+  //int numNodeUpdated = 0;
 
   key_record = find(root, key, false, &key_leaf);
 
@@ -110,10 +110,10 @@ node* BPlusTree::delete_entry(node *root, node *n, int key, void *pointer, int *
   if (neighbor->num_keys + n->num_keys < capacity)
     return merge_nodes(root, n, neighbor, neighbor_index, k_prime, inNumNodeDeleted);
   else
-    return redistribute_nodes(root, n, neighbor, neighbor_index, k_prime_index, k_prime, inNumNodeDeleted);
+    return redistribute_nodes(root, n, neighbor, neighbor_index, k_prime_index, k_prime, inNumNodeUpdated);
 }
 
-node* BPlusTree::remove_entry_from_node(node *n, int key, node *pointer, int *inNumNodeUpdated) {
+node* BPlusTree::remove_entry_from_node(node *n, int key, node *pointer, int *inNumNodeDeleted) {
   int i, num_pointers;
   i = 0;
   *inNumNodeDeleted++;
@@ -133,6 +133,8 @@ node* BPlusTree::remove_entry_from_node(node *n, int key, node *pointer, int *in
 
   if (n->is_leaf)
     for (i = n->num_keys; i < order - 1; i++)
+      //mark record as deleted
+      n->pointers[i]->setDelete();
       n->pointers[i] = NULL;
   else
     for (i = n->num_keys + 1; i < order; i++)
