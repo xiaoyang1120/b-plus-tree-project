@@ -1,2 +1,5 @@
 .vscode/
+.vs/
 discussion.cpp
+test.cpp
+*.exe
