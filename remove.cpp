@@ -285,3 +285,15 @@ node* BPlusTree::redistribute_nodes(node *root, node *n, node *neighbor, int nei
 
   return root;
 }
+
+void BPlusTree::getFirstLeaf(node *root){
+  if (root->isLeaf){
+    //print out contents
+    for(int i=0; i < root->numOfKeys; i++){
+      node *temp = root->pointers[i]
+      //print contents of temp
+    }
+  }else{
+    getFirstLeaf(root->pointers[0]);
+  }
+}
