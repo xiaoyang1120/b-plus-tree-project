@@ -1,3 +1,6 @@
+#include "b_plus_tree.h"
+#include "memory_pool.h"
+
 #include <iostream>
 #include <list>
 #include <fstream>
@@ -5,7 +8,6 @@ using namespace std;
 
 int main()
 {
-
     int select = 0;
     cout<<"Select Block Size:"<<endl;
     do{

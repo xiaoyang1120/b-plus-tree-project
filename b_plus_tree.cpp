@@ -1,4 +1,6 @@
 #include "b_plus_tree.h"
+#include "tree_node.h"
+
 #include <iostream>
 #include <cstddef>
 
@@ -12,9 +14,11 @@ BPlusTree<T>::BPlusTree()
 }
 
 template <typename T>
-BPlusTree<T>::BPlusTree(size_t blockSize)
+BPlusTree<T>::BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index)
 {
     this->blockSize = blockSize;
+    this->disk = disk;
+    this->index = index;
     BPlusTree();
 }
 
@@ -317,22 +321,96 @@ TreeNode<T>* BPlusTree<T>::findParent(TreeNode<T> *cursor, TreeNode<T> *child)
     return parent;
 }
 
-int main()
+template <typename T>
+TreeNode<T>::TreeNode()
 {
-    BPlusTree<int> bptree;
-    // int numbers[12] = {1, 4, 7, 10, 17, 21, 31, 25, 19, 20, 28, 42};
-    bptree.insert(1);
-    bptree.insert(4);
-    bptree.insert(7);
-    bptree.insert(10);
-    bptree.insert(17);
-    bptree.insert(21);
-    bptree.insert(31);
-    bptree.insert(25);
-    bptree.insert(19);
-    // bptree.insert(20);
-    // bptree.insert(28);
-    // bptree.insert(42);
-    cout << "root: " << bptree.getRoot()->getKey(0) << endl;
-    bptree.levelDisplay(bptree.getRoot());
+    this->maxKeys = this->getMaxKeys();
+    this->keys = new T[maxKeys];
+    this->pointers = new TreeNode<T> *[maxKeys + 1];
+    for (int i = 0; i < maxKeys + 1; i++)
+    {
+        pointers[i] = NULL;
+    }
 }
+
+template <typename T>
+TreeNode<T>::TreeNode(size_t blockSize)
+{
+    this->blockSize = blockSize;
+    TreeNode();
+}
+
+template <typename T>
+T TreeNode<T>::getKey(int index)
+{
+    return this->keys[index];
+}
+
+template <typename T>
+TreeNode<T>* TreeNode<T>::getPointer(int index)
+{
+    return this->pointers[index];
+}
+
+template <typename T>
+int TreeNode<T>::getNumOfKeys()
+{
+    return this->numOfKeys;
+}
+
+template <typename T>
+bool TreeNode<T>::getLeaf()
+{
+    return this->isLeaf;
+}
+
+template <typename T>
+void TreeNode<T>::setKey(int index, T value)
+{
+    this->keys[index] = value;
+}
+
+template <typename T>
+void TreeNode<T>::setPointer(int index, TreeNode<T>* pointer)
+{
+    this->pointers[index] = pointer;
+}
+
+template <typename T>
+void TreeNode<T>::setNumOfKeys(int numOfKeys)
+{
+    this->numOfKeys = numOfKeys;
+}
+
+template <typename T>
+void TreeNode<T>::setLeaf(bool isLeaf)
+{
+    this->isLeaf = isLeaf;
+}
+
+template <typename T>
+int TreeNode<T>::getMaxKeys()
+{
+    // TODO: 回头加上了blocksize一起算
+    return 3; // 先hardcode
+}
+
+// int main()
+// {
+//     BPlusTree<int> bptree;
+//     // int numbers[12] = {1, 4, 7, 10, 17, 21, 31, 25, 19, 20, 28, 42};
+//     bptree.insert(1);
+//     bptree.insert(4);
+//     bptree.insert(7);
+//     bptree.insert(10);
+//     bptree.insert(17);
+//     bptree.insert(21);
+//     bptree.insert(31);
+//     bptree.insert(25);
+//     bptree.insert(19);
+//     // bptree.insert(20);
+//     // bptree.insert(28);
+//     // bptree.insert(42);
+//     cout << "root: " << bptree.getRoot()->getKey(0) << endl;
+//     bptree.levelDisplay(bptree.getRoot());
+// }
