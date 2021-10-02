@@ -16,8 +16,6 @@ private:
     size_t blockSize;
     bool isLeaf; 
 
-    int getMaxKeys();
-
 public:
     // Constructor
     TreeNode();
@@ -33,5 +31,7 @@ public:
     void setPointer(int index, TreeNode* pointer);
     void setNumOfKeys(int numOfKeys);
     void setLeaf(bool isLeaf);
+
+    static int calculateMaxKeys(size_t blockSize);
 };
 #endif
