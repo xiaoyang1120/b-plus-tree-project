@@ -8,10 +8,6 @@ TreeNode::TreeNode()
     this->maxKeys = this->getMaxKeys();
     this->keys = new int[maxKeys];
     this->pointers = new TreeNode *[maxKeys + 1];
-    // for (int i = 0; i < maxKeys + 1; i++)
-    // {
-    //     pointers[i] = NULL;
-    // }
 }
 
 TreeNode::TreeNode(size_t blockSize)

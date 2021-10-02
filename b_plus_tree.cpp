@@ -1,5 +1,6 @@
 #include "b_plus_tree.h"
 #include "tree_node.h"
+#include "tree_node.cpp"
 
 #include <iostream>
 #include <cstddef>
@@ -33,7 +34,7 @@ TreeNode *BPlusTree::getRoot()
     return this->root;
 }
 
-void BPlusTree::levelDisplay(TreeNode *cursor)
+void BPlusTree::display(TreeNode *cursor)
 {
     if (cursor != NULL)
     {
@@ -46,7 +47,7 @@ void BPlusTree::levelDisplay(TreeNode *cursor)
         {
             for (int i = 0; i < cursor->getNumOfKeys() + 1; i++)
             {
-                levelDisplay(cursor->getPointer(i));
+                display(cursor->getPointer(i));
             }
         }
     }
@@ -259,12 +260,11 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
         virtualPointers[position + 1] = child;
 
         newInternalNode->setLeaf(false);
-        int leftNumOfKeys = (this->maxKeys + 1) / 2; // 还是maxKey / 2?
-        int rightNumOfKeys = this->maxKeys - leftNumOfKeys; // 还是maxKey + 1 - left?
+        int leftNumOfKeys = (this->maxKeys + 1) / 2;
+        int rightNumOfKeys = this->maxKeys - leftNumOfKeys;
         cursor->setNumOfKeys(leftNumOfKeys);
         newInternalNode->setNumOfKeys(rightNumOfKeys);
 
-        // 这里是否要cursor->numOfKeys "+ 1"？
         for (int i = 0, j = cursor->getNumOfKeys() + 1; i < newInternalNode->getNumOfKeys(); i++, j++)
         {
             newInternalNode->setKey(i, virtualKeys[j]);
@@ -277,7 +277,6 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
         if (cursor == this->root) // splitted node is the only node for the current level
         {
             TreeNode *newRoot = new TreeNode;
-            // newRoot->setKey(0, cursor->getKey(cursor->getNumOfKeys()));
             newRoot->setKey(0, findParentValue(newInternalNode));
             newRoot->setPointer(0, cursor);
             newRoot->setPointer(1, newInternalNode);
@@ -292,7 +291,7 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
     }
 }
 
-// find the parent of the child node
+// find the parent of the node child; finding starts from cursor
 TreeNode* BPlusTree::findParent(TreeNode *cursor, TreeNode *child)
 {
     TreeNode *parent;
@@ -303,12 +302,12 @@ TreeNode* BPlusTree::findParent(TreeNode *cursor, TreeNode *child)
 
     for (int i = 0; i < cursor->getNumOfKeys() + 1; i++)
     {
-        if (cursor->getPointer(i) == child) // 当前层就找到了
+        if (cursor->getPointer(i) == child) // find the parent in the current level
         {
             parent = cursor;
             return parent;
         }
-        else // 要往下层找
+        else // does not find in this level, need to go down one level
         {
             parent = findParent(cursor->getPointer(i), child);
             if (parent != NULL)
@@ -321,6 +320,7 @@ TreeNode* BPlusTree::findParent(TreeNode *cursor, TreeNode *child)
     return parent;
 }
 
+// The key value of parent should be the minimum key value of the right subtree
 int BPlusTree::findParentValue(TreeNode *cursor) 
 {
     while (!cursor->getLeaf()) {
@@ -452,7 +452,6 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
     }
   }
 }
-
 
 void BPlusTree::removeInternal(int x, TreeNode* cursor, TreeNode* child) {
   //numDel++;
