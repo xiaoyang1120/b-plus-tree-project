@@ -12,7 +12,7 @@ TreeNode::TreeNode()
 
 TreeNode::TreeNode(size_t blockSize)
 {
-    // this->blockSize = blockSize;
+    this->blockSize = blockSize;
     this->maxKeys = TreeNode::calculateMaxKeys(blockSize);
     this->keys = new int[maxKeys];
     this->pointers = new TreeNode *[maxKeys + 1];

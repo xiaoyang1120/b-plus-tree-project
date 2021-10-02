@@ -13,7 +13,7 @@ private:
     MemoryPool *index;
     void *diskRootAddress;
 
-    // size_t blockSize;
+    size_t blockSize;
     int maxKeys;
     TreeNode *root;
 
