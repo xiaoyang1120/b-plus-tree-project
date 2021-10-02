@@ -11,26 +11,38 @@ using namespace std;
 BPlusTree::BPlusTree()
 {
     this->root = NULL;
-    this->maxKeys = this->getMaxKeys();
+    this->height = 0;
+    this->numOfNodes = 0;
+    this->maxKeys = 3; // TODO: 回头加上了blocksize一起算
 }
 
 BPlusTree::BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index)
 {
-    this->blockSize = blockSize;
+    this->maxKeys = this->getMaxKeys();
     this->disk = disk;
     this->index = index;
-    BPlusTree();
+    this->root = NULL;
+    this->height = 0;
+    this->numOfNodes = 0;
 }
 
 int BPlusTree::getMaxKeys()
 {
-    // TODO: 回头加上了blocksize一起算
-    return 3; // 先hardcode
+    TreeNode *temp = new TreeNode(blockSize);
+    return temp->getMaxKeys();
 }
 
 TreeNode *BPlusTree::getRoot()
 {
     return this->root;
+}
+
+int BPlusTree::getNumOfNodes() {
+  return this->numOfNodes;
+}
+
+int BPlusTree::getHeight() {
+  return this->height;
 }
 
 void BPlusTree::display(TreeNode *cursor)
@@ -61,6 +73,8 @@ void BPlusTree::insert(int value)
         this->root->setKey(0, value);
         this->root->setLeaf(true);
         this->root->setNumOfKeys(1);
+        this->height = 1;
+        this->numOfNodes++;
         return;
     }
 
@@ -110,8 +124,9 @@ void BPlusTree::insert(int value)
         cursor->setNumOfKeys(cursor->getNumOfKeys() + 1);
         cursor->setPointer(position, NULL); // TODO: hard code NULL for now, 应该是指向data block
     }
-    else // the leaf node is full
+    else // the leaf node is full, need to split
     {
+        this->numOfNodes++;
         TreeNode *newLeafNode = new TreeNode();
 
         // helper keys&pointers to insert the new key into the full node
@@ -186,6 +201,8 @@ void BPlusTree::insert(int value)
             newRoot->setLeaf(false);
             newRoot->setNumOfKeys(1);
             this->root = newRoot;
+            this->height++;
+            this->numOfNodes++;
         }
         else // need to deal with insertion of non leaf node
         {
@@ -223,6 +240,7 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
     }
     else // full, need to balance the tree
     {
+        this->numOfNodes++;
         TreeNode *newInternalNode = new TreeNode;
 
         // helper keys&pointers to insert the new key into the full node
@@ -284,6 +302,8 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
             newRoot->setLeaf(false);
             newRoot->setNumOfKeys(1);
             this->root = newRoot;
+            this->height++;
+            this->numOfNodes++;
         }
         else
         {

@@ -3,6 +3,7 @@
 
 #include "memory_pool.h"
 #include "tree_node.h"
+#include "tree_node.cpp"
 
 #include <cstddef>
 
@@ -17,7 +18,8 @@ private:
     int maxKeys;
     TreeNode *root;
 
-    int getMaxKeys();
+    int height;
+    int numOfNodes;
 
     void insertInternal(int value, TreeNode *cursor, TreeNode *child);
     TreeNode *findParent(TreeNode *cursor, TreeNode *child);
@@ -35,6 +37,10 @@ public:
     void search(int leftValue, int rightValue);
     void remove(int x, int &numDel, int &numUpd);
     void getFirstLeaf();
+
+    int getNumOfNodes();
+    int getHeight();
+    int getMaxKeys();
 };
 
 #endif

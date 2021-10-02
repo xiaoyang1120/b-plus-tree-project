@@ -59,5 +59,13 @@ void TreeNode::setLeaf(bool isLeaf)
 int TreeNode::getMaxKeys()
 {
     // TODO: 回头加上了blocksize一起算
-    return 3; // 先hardcode
+    // return 3; // 先hardcode
+
+    int sum = sizeof(TreeNode*);
+    int keys = 0;
+    while (sum + sizeof(int) + sizeof(TreeNode*) <= this->blockSize) {
+        keys++;
+    }
+    this->maxKeys = keys;
+    return this->maxKeys;
 }
