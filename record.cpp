@@ -1,10 +1,12 @@
 #include "record.h"
+#include <vector>
+#include <iostream>
 
 using namespace std;
 
 Record::Record(char id[10], float r, int n) {
     this->isValid = true;
-    this->tconst = id;
+    memcpy(this->tconst, id, 10);
     this->averageRating = r;
     this->numVotes = n;
 }
