@@ -18,6 +18,7 @@ BPlusTree::BPlusTree()
 
 BPlusTree::BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index)
 {
+    this->blockSize = blockSize;
     this->maxKeys = this->getMaxKeys();
     this->disk = disk;
     this->index = index;
@@ -77,8 +78,6 @@ void BPlusTree::insert(int value)
         this->numOfNodes++;
         return;
     }
-
-    cout << "insert value: " << value << endl;
 
     TreeNode *cursor = this->root;
     TreeNode *parent;

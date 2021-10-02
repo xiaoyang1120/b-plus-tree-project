@@ -5,7 +5,7 @@ using namespace std;
 
 TreeNode::TreeNode()
 {
-    this->maxKeys = this->getMaxKeys();
+    this->maxKeys = 41;
     this->keys = new int[maxKeys];
     this->pointers = new TreeNode *[maxKeys + 1];
 }
@@ -65,6 +65,7 @@ int TreeNode::getMaxKeys()
     int keys = 0;
     while (sum + sizeof(int) + sizeof(TreeNode*) <= this->blockSize) {
         keys++;
+        sum += sizeof(int) + sizeof(TreeNode*);
     }
     this->maxKeys = keys;
     return this->maxKeys;

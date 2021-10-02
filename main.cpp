@@ -1,9 +1,10 @@
 #include "b_plus_tree.h"
 #include "memory_pool.h"
+#include "tree_node.h"
 #include "record.h"
-#include "memory_pool.cpp"
-#include "b_plus_tree.cpp"
-#include "record.cpp"
+//#include "memory_pool.cpp"
+//#include "b_plus_tree.cpp"
+//#include "record.cpp"
 // #include "tree_node.cpp"
 
 #include <iostream>
@@ -29,7 +30,6 @@ int main()
     // Creating the tree
     BPlusTree tree = BPlusTree(BLOCKSIZE, &disk, &index);
     cout << "max keys: " << tree.getMaxKeys() << endl;
-    return 0;
 
     std::cout <<"Reading in data ... "<<endl;
     std::ifstream file("../data/data.tsv"); // actual data
@@ -69,19 +69,6 @@ int main()
 
             //build the bplustree as we insert records
             tree.insert(temp->numVotes);
-            cout << "Parameter n: " << tree.getMaxKeys() << endl;
-            cout << "Number of nodes: " << tree.getNumOfNodes() << endl;
-            cout << "Height: " << tree.getHeight() << endl;
-            cout << "Content of root: " << endl;
-            for (int i = 0; i < tree.getRoot()->getNumOfKeys(); i++) {
-                cout << tree.getRoot()->getKey(i) << " ";
-            }
-            cout << endl;
-            cout << "Content of first child node of root: " << endl;
-            for (int i = 0; i < tree.getRoot()->getPointer(0)->getNumOfKeys(); i++) {
-                cout << tree.getRoot()->getPointer(0)->getKey(i) << " ";
-            }
-
 
             //logging
             // cout << "Inserted record " << recordNum + 1 << " at block address: " << &tempAddress.blockAddress << " and offset " << &tempAddress.offset << endl;
@@ -89,6 +76,23 @@ int main()
         }
         file.close();
     }
+
+    cout << "Parameter n: " << tree.getMaxKeys() << endl;
+    cout << "Number of nodes: " << tree.getNumOfNodes() << endl;
+    cout << "Height: " << tree.getHeight() << endl;
+    cout << "Content of root: " << endl;
+    for (int i = 0; i < tree.getRoot()->getNumOfKeys(); i++) {
+        cout << tree.getRoot()->getKey(i) << " ";
+    }
+    cout << endl;
+    cout << "Content of first child node of root: " << endl;
+
+    for (int i = 0; i < tree.getRoot()->getPointer(0)->getNumOfKeys(); i++) {
+        cout << tree.getRoot()->getPointer(0)->getKey(i) << " ";
+    }
+
+    cout << endl;
+
 
     cout << "Block Size: " << BLOCKSIZE << endl;
     cout << "Record Number: " << recordNum << endl;
