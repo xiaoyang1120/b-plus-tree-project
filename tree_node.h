@@ -1,12 +1,15 @@
 #ifndef TREE_NODE_H
 #define TREE_NODE_H
 
+#include "address.h"
+
 #include <cstddef>
 
 template <typename T>
 class TreeNode 
 {
 private:
+    Address *disk;
     T *keys;
     TreeNode<T> **pointers;
     int numOfKeys;

@@ -1,5 +1,4 @@
 #include "memory_pool.h"
-#include "types.h"
 
 #include <iostream>
 #include <vector>
@@ -58,18 +57,17 @@ Address MemoryPool::allocate(size_t size) {
     return recordAddress;
 }
 
-void *MemoryPool::loadRecord(Address address, size_t size)
+void *MemoryPool::load(Address address, size_t size)
 {
     void *mainMemoryAddress = operator new(size);
     memcpy(mainMemoryAddress, (char *)address.blockAddress + address.index, size);
 
-    // Update blocks accessed
     blocksAccessed++;
 
     return mainMemoryAddress;
 }
 
-Address MemoryPool::saveRecord(void *itemAddress, size_t size) {
+Address MemoryPool::save(void *itemAddress, size_t size) {
     Address diskAddress = allocate(size);
     memcpy((char *)diskAddress.blockAddress + diskAddress.index, itemAddress, size);
     

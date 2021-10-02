@@ -1,17 +1,13 @@
 #ifndef MEMORY_POOL_H
 #define MEMORY_POOL_H
 
+#include "address.h"
+
 #include <vector>
 #include <unordered_map>
 #include <tuple>
 
 using namespace std;
-
-struct Address
-{
-  void *blockAddress;
-  short int index;
-};
 
 class MemoryPool
 {
@@ -25,8 +21,8 @@ private:
     int numAllocated;
     int blocksAccessed;
 
-    void *pool;
-    void *block;
+    void *pool; // memory pool
+    void *block; //block pointer
 public:
     // constructor
     MemoryPool(size_t totalPoolSize, size_t blockSize);
@@ -37,9 +33,9 @@ public:
 
     bool deallocate(Address address, size_t size);
 
-    void *loadRecord(Address address, size_t size);
+    void *load(Address address, size_t size);
     
-    Address saveRecord(void *itemAddress, size_t size);
+    Address save(void *itemAddress, size_t size);
 
     size_t getTotalPoolSize() {return totalPoolSize;}
 
@@ -52,6 +48,10 @@ public:
     int getNumAllocated() {return numAllocated;}
 
     int getBlockSizeUsed() {return blockSizeUsed;}
+
+    void setNumAllocated(int num) { this->numAllocated = num; }
+
+    void setBlockAccessed(int num) { this->blocksAccessed = num; }
 
     ~MemoryPool();
 };

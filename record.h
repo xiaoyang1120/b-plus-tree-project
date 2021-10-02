@@ -1,6 +1,8 @@
 #ifndef RECORD_H
 #define RECORD_H
 
+#include <iostream>
+
 class Record{
 public:
     char tconst[10];     // Movie unique identidier, a string of at most 10 chars
