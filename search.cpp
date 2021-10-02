@@ -8,26 +8,25 @@
 
 using namespace std;
 
-template <typename T>
-void BPlusTree<T>::search(T left, T right) {
+void BPlusTree::search(int left, int right) {
     if (root == nullptr) {
         cout << "Tree is empty" << endl;
     } else {
-        Address rootAddress(diskRootAddress, 0);
-        root = (TreeNode<T> *) index->load(rootAddress, blockSize);
-        TreeNode<T>* cur = root;
+        Address rootAddress{diskRootAddress, 0};
+        root = (TreeNode *) index->load(rootAddress, blockSize);
+        TreeNode* cur = root;
         bool flag = false;
 
-        while (!cur->isLeaf) {
-            for (int i = 0; i < cur.getNumOfKeys(); i++)
+        while (!cur->getLeaf()) {
+            for (int i = 0; i < cur->getNumOfKeys(); i++)
             {
                 if (left < cur->getKey(i)) {
-                    cur = (TreeNode<T> *) index->load(cur->getPointer[i], blockSize);
+                    cur = (TreeNode*) index->load(cur->getDisk()[i], blockSize);
                     cout << i << endl;
                     break;
                 }
                 if (i == cur->getNumOfKeys()-1 ) {
-                    cur = (TreeNode<T> *) index->load(cur->getPointer[i+1], blockSize);
+                    cur = (TreeNode*) index->load(cur->getDisk()[i+1], blockSize);
                     cout << i << endl;
                     break;
                 }
@@ -37,18 +36,18 @@ void BPlusTree<T>::search(T left, T right) {
 
         while (!flag) {
             int idx = 0;
-            for (; idx < cur->numOfKeys; idx++) {
+            for (; idx < cur->getNumOfKeys(); idx++) {
                 if (cur->getKey(idx) > right) {
                     flag = true; // find the right boundary
                     break;
                 }
-                if (cur->getKey(idx) <= right && cur->getKeys(idx) >= left) {
-                    cout << cur->getKeys(idx) << endl;
+                if (cur->getKey(idx) <= right && cur->getKey(idx) >= left) {
+                    cout << cur->getKey(idx) << endl;
                 }
             }
 
-            if (cur->diskAddress[cur->getNumOfKeys()].blockAddress != nullptr && cur->getKey(idx) != right) {
-                cur = (TreeNode<T> *)index->load(cur->getPointer[cur->getNumOfKeys()], blockSize);
+            if (cur->getDisk()[cur->getNumOfKeys()].blockAddress != nullptr && cur->getKey(idx) != right) {
+                cur = (TreeNode*)index->load(cur->getDisk()[cur->getNumOfKeys()], blockSize);
             } else {
                 flag = true;
             }
