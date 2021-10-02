@@ -58,6 +58,7 @@ Address MemoryPool::allocate(size_t size) {
 }
 
 void *MemoryPool::load(Address address, size_t size)
+
 {
     void *mainMemoryAddress = operator new(size);
     memcpy(mainMemoryAddress, (char *)address.blockAddress + address.index, size);
