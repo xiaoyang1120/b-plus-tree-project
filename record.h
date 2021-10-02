@@ -11,6 +11,7 @@ public:
     bool isValid;       // True if the record is present and not deleted
 public:
     //constructor, should init the slot
+    Record();
     Record(char id[10], float r, int n);
 
     //utils

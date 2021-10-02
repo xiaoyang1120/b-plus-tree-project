@@ -4,6 +4,8 @@
 
 using namespace std;
 
+Record::Record() {}
+
 Record::Record(char id[10], float r, int n) {
     this->isValid = true;
     memcpy(this->tconst, id, 10);
