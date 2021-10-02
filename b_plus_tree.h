@@ -3,7 +3,6 @@
 
 #include "memory_pool.h"
 #include "tree_node.h"
-//#include "tree_node.cpp"
 
 #include <cstddef>
 
@@ -14,7 +13,7 @@ private:
     MemoryPool *index;
     void *diskRootAddress;
 
-    size_t blockSize;
+    // size_t blockSize;
     int maxKeys;
     TreeNode *root;
 

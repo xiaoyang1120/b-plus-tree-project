@@ -1,5 +1,6 @@
 #include "b_plus_tree.h"
 #include "tree_node.h"
+#include "tree_node.cpp"
 
 #include <iostream>
 #include <cstddef>
@@ -13,13 +14,13 @@ BPlusTree::BPlusTree()
     this->root = NULL;
     this->height = 0;
     this->numOfNodes = 0;
-    this->maxKeys = 3; // TODO: 回头加上了blocksize一起算
+    this->maxKeys = 3;
 }
 
 BPlusTree::BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index)
 {
-    this->blockSize = blockSize;
-    this->maxKeys = this->getMaxKeys();
+    // this->blockSize = blockSize;
+    this->maxKeys = TreeNode::calculateMaxKeys(blockSize);
     this->disk = disk;
     this->index = index;
     this->root = NULL;
@@ -29,8 +30,7 @@ BPlusTree::BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index)
 
 int BPlusTree::getMaxKeys()
 {
-    TreeNode *temp = new TreeNode(blockSize);
-    return temp->getMaxKeys();
+    return this->maxKeys;
 }
 
 TreeNode *BPlusTree::getRoot()

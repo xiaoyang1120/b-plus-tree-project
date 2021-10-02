@@ -32,6 +32,6 @@ public:
     void setNumOfKeys(int numOfKeys);
     void setLeaf(bool isLeaf);
 
-    int getMaxKeys();
+    static int calculateMaxKeys(size_t blockSize);
 };
 #endif

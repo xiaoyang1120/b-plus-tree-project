@@ -5,15 +5,17 @@ using namespace std;
 
 TreeNode::TreeNode()
 {
-    this->maxKeys = 41;
+    this->maxKeys = 3;
     this->keys = new int[maxKeys];
     this->pointers = new TreeNode *[maxKeys + 1];
 }
 
 TreeNode::TreeNode(size_t blockSize)
 {
-    this->blockSize = blockSize;
-    TreeNode();
+    // this->blockSize = blockSize;
+    this->maxKeys = TreeNode::calculateMaxKeys(blockSize);
+    this->keys = new int[maxKeys];
+    this->pointers = new TreeNode *[maxKeys + 1];
 }
 
 int TreeNode::getKey(int index)
@@ -56,17 +58,14 @@ void TreeNode::setLeaf(bool isLeaf)
     this->isLeaf = isLeaf;
 }
 
-int TreeNode::getMaxKeys()
+int TreeNode::calculateMaxKeys(size_t blockSize)
 {
-    // TODO: 回头加上了blocksize一起算
-    // return 3; // 先hardcode
-
     int sum = sizeof(TreeNode*);
-    int keys = 0;
-    while (sum + sizeof(int) + sizeof(TreeNode*) <= this->blockSize) {
-        keys++;
+    int maxKeys = 0;
+    while (sum + sizeof(int) + sizeof(TreeNode*) <= blockSize) {
+        maxKeys++;
         sum += sizeof(int) + sizeof(TreeNode*);
     }
-    this->maxKeys = keys;
-    return this->maxKeys;
+    
+    return maxKeys;
 }
