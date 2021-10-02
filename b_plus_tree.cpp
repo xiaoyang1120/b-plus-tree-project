@@ -1,5 +1,6 @@
 #include "b_plus_tree.h"
 #include "tree_node.h"
+#include "tree_node.cpp"
 
 #include <iostream>
 #include <cstddef>
@@ -453,7 +454,6 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
   }
 }
 
-
 void BPlusTree::removeInternal(int x, TreeNode* cursor, TreeNode* child) {
   //numDel++;
   if (cursor == root) {
@@ -579,3 +579,19 @@ void BPlusTree::getFirstLeaf(){
         cout<<"first leaf, first element: "<<node->getKey(0)<<endl;
     }
 }
+
+// int main()
+// {
+//     BPlusTree bptree;
+//     int numbers[12] = {1, 4, 7, 10, 17, 21, 31, 25, 19, 20, 28, 42};
+//     for (int i = 0; i < 12; i++) {
+//         bptree.insert(numbers[i]);
+//     }
+    
+//     // for (int i = 1; i <= 10; i++) {
+//     //     bptree.insert(i * 10);
+//     // }
+
+//     cout << "root: " << bptree.getRoot()->getKey(0) << endl;
+//     bptree.levelDisplay(bptree.getRoot());
+// }

@@ -1,9 +1,13 @@
 #include "b_plus_tree.h"
 #include "memory_pool.h"
+#include "memory_pool.cpp"
+#include "b_plus_tree.cpp"
+// #include "tree_node.cpp"
 
 #include <iostream>
 #include <list>
 #include <fstream>
+#include <cstddef>
 using namespace std;
 
 int main()
@@ -19,9 +23,9 @@ int main()
      bptree.insert(31);
      bptree.insert(25);
      bptree.insert(19);
-     // bptree.insert(20);
-     // bptree.insert(28);
-     // bptree.insert(42);
+     bptree.insert(20);
+     bptree.insert(28);
+     bptree.insert(42);
      cout << "root: " << bptree.getRoot()->getKey(0) << endl;
     bptree.levelDisplay(bptree.getRoot());
     int numU = 0;
