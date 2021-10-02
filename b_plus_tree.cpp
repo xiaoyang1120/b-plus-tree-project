@@ -70,7 +70,7 @@ void BPlusTree::insert(int value)
 {
     if (this->root == NULL) // very first node in the whole tree
     {
-        this->root = new TreeNode();
+        this->root = new TreeNode(this->blockSize);
         this->root->setKey(0, value);
         this->root->setLeaf(true);
         this->root->setNumOfKeys(1);
@@ -126,7 +126,7 @@ void BPlusTree::insert(int value)
     else // the leaf node is full, need to split
     {
         this->numOfNodes++;
-        TreeNode *newLeafNode = new TreeNode();
+        TreeNode *newLeafNode = new TreeNode(this->blockSize);
 
         // helper keys&pointers to insert the new key into the full node
         int MAX = this->maxKeys;
@@ -193,7 +193,7 @@ void BPlusTree::insert(int value)
         // need to produce another non-leaf level
         if (cursor == this->root)
         {
-            TreeNode *newRoot = new TreeNode;
+            TreeNode *newRoot = new TreeNode(this->blockSize);
             newRoot->setKey(0, newLeafNode->getKey(0)); // parent node value is the right node value
             newRoot->setPointer(0, cursor);
             newRoot->setPointer(1, newLeafNode);
@@ -240,7 +240,7 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
     else // full, need to balance the tree
     {
         this->numOfNodes++;
-        TreeNode *newInternalNode = new TreeNode;
+        TreeNode *newInternalNode = new TreeNode(this->blockSize);
 
         // helper keys&pointers to insert the new key into the full node
         int *virtualKeys = new int[this->maxKeys + 1];
@@ -294,7 +294,7 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
 
         if (cursor == this->root) // splitted node is the only node for the current level
         {
-            TreeNode *newRoot = new TreeNode;
+            TreeNode *newRoot = new TreeNode(this->blockSize);
             newRoot->setKey(0, findParentValue(newInternalNode));
             newRoot->setPointer(0, cursor);
             newRoot->setPointer(1, newInternalNode);
