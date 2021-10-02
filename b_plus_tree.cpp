@@ -1,6 +1,5 @@
 #include "b_plus_tree.h"
 #include "tree_node.h"
-#include "tree_node.cpp"
 
 #include <iostream>
 #include <cstddef>
@@ -64,6 +63,8 @@ void BPlusTree::insert(int value)
         this->root->setNumOfKeys(1);
         return;
     }
+
+    cout << "insert value: " << value << endl;
 
     TreeNode *cursor = this->root;
     TreeNode *parent;
@@ -329,6 +330,8 @@ int BPlusTree::findParentValue(TreeNode *cursor)
     return cursor->getKey(0);
 }
 
+int MAX = 3;
+
 void BPlusTree::remove(int x, int &numDel, int &numUpd) {
 
   if (root == NULL) {
@@ -371,7 +374,7 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
     }
     cursor->setNumOfKeys(cursor->getNumOfKeys()-1);
     if (cursor == root) {
-      for (int i = 0; i < this->maxKeys + 1; i++) {
+      for (int i = 0; i < MAX + 1; i++) {
         cursor->setPointer(i, NULL);
       }
       if (cursor->getNumOfKeys() == 0) {
@@ -384,13 +387,13 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
     cursor->setPointer(cursor->getNumOfKeys(), cursor->getPointer(cursor->getNumOfKeys() + 1));
     //set record as null
     cursor->setPointer(cursor->getNumOfKeys() + 1, NULL);
-    if (cursor->getNumOfKeys() >= (this->maxKeys + 1) / 2) {
+    if (cursor->getNumOfKeys() >= (MAX + 1) / 2) {
       numUpd++;
       return;
     }
     if (leftSibling >= 0) {
-      TreeNode*leftNode = parent->getPointer(leftSibling);
-      if (leftNode->getNumOfKeys() >= (this->maxKeys + 1) / 2 ) {
+      TreeNode* leftNode = parent->getPointer(leftSibling);
+      if (leftNode->getNumOfKeys() >= (MAX + 1) / 2 + 1) {
         for (int i = cursor->getNumOfKeys(); i > 0; i--) {
           cursor->setKey(i, cursor->getKey(i-1));
         }
@@ -408,7 +411,7 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
     }
     if (rightSibling <= parent->getNumOfKeys()) {
       TreeNode* rightNode = parent->getPointer(rightSibling);
-      if (rightNode->getNumOfKeys() >= (this->maxKeys + 1) / 2 + 1) {
+      if (rightNode->getNumOfKeys() >= (MAX + 1) / 2 + 1) {
         cursor->setNumOfKeys(cursor->getNumOfKeys()+1);
         cursor->setPointer(cursor->getNumOfKeys(), cursor->getPointer(cursor->getNumOfKeys() - 1));
         cursor->setPointer(cursor->getNumOfKeys() - 1, NULL);
@@ -489,7 +492,7 @@ void BPlusTree::removeInternal(int x, TreeNode* cursor, TreeNode* child) {
     cursor->setPointer(i, cursor->getPointer(i+1));
   }
   cursor->setNumOfKeys(cursor->getNumOfKeys()-1);
-  if (cursor->getNumOfKeys() >= (this->maxKeys + 1) / 2 - 1 ) {
+  if (cursor->getNumOfKeys() >= (MAX + 1) / 2 - 1 ) {
     return;
   }
   if (cursor == root)
@@ -505,7 +508,7 @@ void BPlusTree::removeInternal(int x, TreeNode* cursor, TreeNode* child) {
   }
   if (leftSibling >= 0) {
     TreeNode* leftNode = parent->getPointer(leftSibling);
-    if (leftNode->getNumOfKeys() >= (this->maxKeys + 1) / 2) {
+    if (leftNode->getNumOfKeys() >= (MAX + 1) / 2) {
       for (int i = cursor->getNumOfKeys(); i > 0; i--) {
         cursor->setKey(i, cursor->getKey(i-1));
       }
@@ -522,7 +525,7 @@ void BPlusTree::removeInternal(int x, TreeNode* cursor, TreeNode* child) {
   }
   if (rightSibling <= parent->getNumOfKeys()) {
     TreeNode* rightNode = parent->getPointer(rightSibling);
-    if (rightNode->getNumOfKeys() >= (this->maxKeys + 1) / 2) {
+    if (rightNode->getNumOfKeys() >= (MAX + 1) / 2) {
       cursor->setKey(cursor->getNumOfKeys(), parent->getKey(pos));
       parent->setKey(pos, rightNode->getKey(0));
       for (int i = 0; i < rightNode->getNumOfKeys() - 1; i++) {
