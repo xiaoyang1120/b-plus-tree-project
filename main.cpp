@@ -8,6 +8,23 @@ using namespace std;
 
 int main()
 {
+    BPlusTree bptree;
+     // int numbers[12] = {1, 4, 7, 10, 17, 21, 31, 25, 19, 20, 28, 42};
+     bptree.insert(1);
+     bptree.insert(4);
+     bptree.insert(7);
+     bptree.insert(10);
+     bptree.insert(17);
+     bptree.insert(21);
+     bptree.insert(31);
+     bptree.insert(25);
+     bptree.insert(19);
+     // bptree.insert(20);
+     // bptree.insert(28);
+     // bptree.insert(42);
+     cout << "root: " << bptree.getRoot()->getKey(0) << endl;
+     bptree.levelDisplay(bptree.getRoot());
+
     int select = 0;
     cout<<"Select Block Size:"<<endl;
     do{

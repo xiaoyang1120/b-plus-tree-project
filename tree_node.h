@@ -5,13 +5,12 @@
 
 #include <cstddef>
 
-template <typename T>
 class TreeNode 
 {
 private:
     Address *disk;
-    T *keys;
-    TreeNode<T> **pointers;
+    int *keys;
+    TreeNode **pointers;
     int numOfKeys;
     int maxKeys;
     size_t blockSize;
@@ -24,13 +23,13 @@ public:
     TreeNode();
     TreeNode(size_t blockSize);
 
-    T getKey(int index);
-    TreeNode<T>* getPointer(int index);
+    int getKey(int index);
+    TreeNode* getPointer(int index);
     int getNumOfKeys();
     bool getLeaf();
 
-    void setKey(int index, T value);
-    void setPointer(int index, TreeNode<T>* pointer);
+    void setKey(int index, int value);
+    void setPointer(int index, TreeNode* pointer);
     void setNumOfKeys(int numOfKeys);
     void setLeaf(bool isLeaf);
 };

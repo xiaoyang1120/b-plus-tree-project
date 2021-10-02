@@ -6,15 +6,13 @@
 
 using namespace std;
 
-template <typename T>
-BPlusTree<T>::BPlusTree()
+BPlusTree::BPlusTree()
 {
     this->root = NULL;
     this->maxKeys = this->getMaxKeys();
 }
 
-template <typename T>
-BPlusTree<T>::BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index)
+BPlusTree::BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index)
 {
     this->blockSize = blockSize;
     this->disk = disk;
@@ -22,21 +20,18 @@ BPlusTree<T>::BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index)
     BPlusTree();
 }
 
-template <typename T>
-int BPlusTree<T>::getMaxKeys()
+int BPlusTree::getMaxKeys()
 {
     // TODO: 回头加上了blocksize一起算
     return 3; // 先hardcode
 }
 
-template <typename T>
-TreeNode<T> *BPlusTree<T>::getRoot()
+TreeNode *BPlusTree::getRoot()
 {
     return this->root;
 }
 
-template <typename T>
-void BPlusTree<T>::levelDisplay(TreeNode<T> *cursor)
+void BPlusTree::levelDisplay(TreeNode *cursor)
 {
     if (cursor != NULL)
     {
@@ -55,20 +50,19 @@ void BPlusTree<T>::levelDisplay(TreeNode<T> *cursor)
     }
 }
 
-template <typename T>
-void BPlusTree<T>::insert(T value)
+void BPlusTree::insert(int value)
 {
     if (this->root == NULL) // very first node in the whole tree
     {
-        this->root = new TreeNode<T>;
+        this->root = new TreeNode();
         this->root->setKey(0, value);
         this->root->setLeaf(true);
         this->root->setNumOfKeys(1);
         return;
     }
     
-    TreeNode<T> *cursor = this->root;
-    TreeNode<T> *parent;
+    TreeNode *cursor = this->root;
+    TreeNode *parent;
     while (!cursor->getLeaf()) // go along the way to locate to the leaf node to insert
     {
         parent = cursor;
@@ -113,15 +107,15 @@ void BPlusTree<T>::insert(T value)
     }
     else // the leaf node is full
     {
-        TreeNode<T> *newLeafNode = new TreeNode<T>;
+        TreeNode *newLeafNode = new TreeNode();
 
         // helper keys&pointers to insert the new key into the full node
-        T virtualKeys[this->maxKeys + 1];
+        int virtualKeys[this->maxKeys + 1];
         for (int i = 0; i < this->maxKeys; i++)
         {
             virtualKeys[i] = cursor->getKey(i);
         }
-        TreeNode<T>* virtualPointers[this->maxKeys + 2];
+        TreeNode* virtualPointers[this->maxKeys + 2];
         for (int i = 0; i <= this->maxKeys; i++)
         {
             virtualPointers[i] = cursor->getPointer(i);
@@ -178,7 +172,7 @@ void BPlusTree<T>::insert(T value)
         // need to produce another non-leaf level
         if (cursor == this->root)
         {
-            TreeNode<T> *newRoot = new TreeNode<T>;
+            TreeNode *newRoot = new TreeNode;
             newRoot->setKey(0, newLeafNode->getKey(0)); // parent node value is the right node value
             newRoot->setPointer(0, cursor);
             newRoot->setPointer(1, newLeafNode);
@@ -193,8 +187,7 @@ void BPlusTree<T>::insert(T value)
     }
 }
 
-template <typename T>
-void BPlusTree<T>::insertInternal(T value, TreeNode<T> *cursor, TreeNode<T> *child)
+void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
 {
     if (cursor->getNumOfKeys() < this->maxKeys) // not full
     {
@@ -223,11 +216,11 @@ void BPlusTree<T>::insertInternal(T value, TreeNode<T> *cursor, TreeNode<T> *chi
     }
     else // full, need to balance the tree
     {
-        TreeNode<T> *newInternalNode = new TreeNode<T>;
+        TreeNode *newInternalNode = new TreeNode;
 
         // helper keys&pointers to insert the new key into the full node
-        T virtualKeys[this->maxKeys + 1];
-        TreeNode<T> *virtualPointers[this->maxKeys + 2];
+        int virtualKeys[this->maxKeys + 1];
+        TreeNode *virtualPointers[this->maxKeys + 2];
         for (int i = 0; i < this->maxKeys; i++)
         {
             virtualKeys[i] = cursor->getKey(i);
@@ -276,7 +269,7 @@ void BPlusTree<T>::insertInternal(T value, TreeNode<T> *cursor, TreeNode<T> *chi
 
         if (cursor == this->root) // splitted node is the only node for the current level
         {
-            TreeNode<T> *newRoot = new TreeNode<T>;
+            TreeNode *newRoot = new TreeNode;
             newRoot->setKey(0, cursor->getKey(cursor->getNumOfKeys()));
             newRoot->setPointer(0, cursor);
             newRoot->setPointer(1, newInternalNode);
@@ -291,11 +284,10 @@ void BPlusTree<T>::insertInternal(T value, TreeNode<T> *cursor, TreeNode<T> *chi
     }
 }
 
-template <typename T>
 // find the parent of the child node
-TreeNode<T>* BPlusTree<T>::findParent(TreeNode<T> *cursor, TreeNode<T> *child)
+TreeNode* BPlusTree::findParent(TreeNode *cursor, TreeNode *child)
 {
-    TreeNode<T> *parent;
+    TreeNode *parent;
     if (cursor->getLeaf() || cursor->getPointer(0)->getLeaf())
     {
         return NULL;
@@ -319,80 +311,6 @@ TreeNode<T>* BPlusTree<T>::findParent(TreeNode<T> *cursor, TreeNode<T> *child)
     }
 
     return parent;
-}
-
-template <typename T>
-TreeNode<T>::TreeNode()
-{
-    this->maxKeys = this->getMaxKeys();
-    this->keys = new T[maxKeys];
-    this->pointers = new TreeNode<T> *[maxKeys + 1];
-    for (int i = 0; i < maxKeys + 1; i++)
-    {
-        pointers[i] = NULL;
-    }
-}
-
-template <typename T>
-TreeNode<T>::TreeNode(size_t blockSize)
-{
-    this->blockSize = blockSize;
-    TreeNode();
-}
-
-template <typename T>
-T TreeNode<T>::getKey(int index)
-{
-    return this->keys[index];
-}
-
-template <typename T>
-TreeNode<T>* TreeNode<T>::getPointer(int index)
-{
-    return this->pointers[index];
-}
-
-template <typename T>
-int TreeNode<T>::getNumOfKeys()
-{
-    return this->numOfKeys;
-}
-
-template <typename T>
-bool TreeNode<T>::getLeaf()
-{
-    return this->isLeaf;
-}
-
-template <typename T>
-void TreeNode<T>::setKey(int index, T value)
-{
-    this->keys[index] = value;
-}
-
-template <typename T>
-void TreeNode<T>::setPointer(int index, TreeNode<T>* pointer)
-{
-    this->pointers[index] = pointer;
-}
-
-template <typename T>
-void TreeNode<T>::setNumOfKeys(int numOfKeys)
-{
-    this->numOfKeys = numOfKeys;
-}
-
-template <typename T>
-void TreeNode<T>::setLeaf(bool isLeaf)
-{
-    this->isLeaf = isLeaf;
-}
-
-template <typename T>
-int TreeNode<T>::getMaxKeys()
-{
-    // TODO: 回头加上了blocksize一起算
-    return 3; // 先hardcode
 }
 
 // int main()
