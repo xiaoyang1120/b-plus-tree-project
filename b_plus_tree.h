@@ -20,6 +20,7 @@ private:
     int getMaxKeys();
     void insertInternal(int value, TreeNode *cursor, TreeNode *child);
     TreeNode *findParent(TreeNode *cursor, TreeNode *child);
+    int findParentValue(TreeNode *cursor);
 public:
     // Constructor
     BPlusTree();

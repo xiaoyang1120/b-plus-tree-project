@@ -110,12 +110,13 @@ void BPlusTree::insert(int value)
         TreeNode *newLeafNode = new TreeNode();
 
         // helper keys&pointers to insert the new key into the full node
-        int virtualKeys[this->maxKeys + 1];
+        int MAX = this->maxKeys;
+        int *virtualKeys = new int[MAX + 1];
         for (int i = 0; i < this->maxKeys; i++)
         {
             virtualKeys[i] = cursor->getKey(i);
         }
-        TreeNode* virtualPointers[this->maxKeys + 2];
+        TreeNode **virtualPointers = new TreeNode*[MAX + 2];
         for (int i = 0; i <= this->maxKeys; i++)
         {
             virtualPointers[i] = cursor->getPointer(i);
@@ -149,6 +150,7 @@ void BPlusTree::insert(int value)
         cursor->setPointer(cursor->getNumOfKeys(), newLeafNode);
         // last pointer of right node points to the original right node of left node
         newLeafNode->setPointer(newLeafNode->getNumOfKeys(), cursor->getPointer(this->maxKeys));
+        cursor->setPointer(this->maxKeys, NULL);
 
         // copy virtual node value into right node
         for (int i = 0; i < cursor->getNumOfKeys(); i++)
@@ -219,8 +221,8 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
         TreeNode *newInternalNode = new TreeNode;
 
         // helper keys&pointers to insert the new key into the full node
-        int virtualKeys[this->maxKeys + 1];
-        TreeNode *virtualPointers[this->maxKeys + 2];
+        int *virtualKeys = new int[this->maxKeys + 1];
+        TreeNode **virtualPointers = new TreeNode*[this->maxKeys + 2];
         for (int i = 0; i < this->maxKeys; i++)
         {
             virtualKeys[i] = cursor->getKey(i);
@@ -242,20 +244,22 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
         {
             virtualKeys[i] = virtualKeys[i - 1];
         }
+        // insert
+        virtualKeys[position] = value;
         
         // for non leaf node, key i <-> pointer i + 1
         for (int i = this->maxKeys + 2; i > position + 1; i--)
         {
             virtualPointers[i] = virtualPointers[i - 1];
         }
-
         // insert
-        virtualKeys[position] = value;
         virtualPointers[position + 1] = child;
 
         newInternalNode->setLeaf(false);
         int leftNumOfKeys = (this->maxKeys + 1) / 2; // 还是maxKey / 2?
         int rightNumOfKeys = this->maxKeys - leftNumOfKeys; // 还是maxKey + 1 - left?
+        cursor->setNumOfKeys(leftNumOfKeys);
+        newInternalNode->setNumOfKeys(rightNumOfKeys);
 
         // 这里是否要cursor->numOfKeys "+ 1"？
         for (int i = 0, j = cursor->getNumOfKeys() + 1; i < newInternalNode->getNumOfKeys(); i++, j++)
@@ -270,7 +274,8 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
         if (cursor == this->root) // splitted node is the only node for the current level
         {
             TreeNode *newRoot = new TreeNode;
-            newRoot->setKey(0, cursor->getKey(cursor->getNumOfKeys()));
+            // newRoot->setKey(0, cursor->getKey(cursor->getNumOfKeys()));
+            newRoot->setKey(0, findParentValue(newInternalNode));
             newRoot->setPointer(0, cursor);
             newRoot->setPointer(1, newInternalNode);
             newRoot->setLeaf(false);
@@ -288,7 +293,7 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
 TreeNode* BPlusTree::findParent(TreeNode *cursor, TreeNode *child)
 {
     TreeNode *parent;
-    if (cursor->getLeaf() || cursor->getPointer(0)->getLeaf())
+    if (cursor->getLeaf() || (cursor->getPointer(0))->getLeaf())
     {
         return NULL;
     }
@@ -311,6 +316,14 @@ TreeNode* BPlusTree::findParent(TreeNode *cursor, TreeNode *child)
     }
 
     return parent;
+}
+
+int BPlusTree::findParentValue(TreeNode *cursor) 
+{
+    while (!cursor->getLeaf()) {
+        cursor = cursor->getPointer(0);
+    }
+    return cursor->getKey(0);
 }
 
 // int main()
