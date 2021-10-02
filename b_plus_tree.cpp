@@ -19,7 +19,7 @@ BPlusTree::BPlusTree()
 
 BPlusTree::BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index)
 {
-    // this->blockSize = blockSize;
+    this->blockSize = blockSize;
     this->maxKeys = TreeNode::calculateMaxKeys(blockSize);
     this->disk = disk;
     this->index = index;
