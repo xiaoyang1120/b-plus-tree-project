@@ -1,9 +1,90 @@
 #include "b_plus_tree.h"
+#include "tree_node.h"
 #include <iostream>
 #include <cstddef>
+#include <list>
+#include <iterator>
 
 using namespace std;
 
+int MAX = 3;
+
+//node
+template <typename T>
+TreeNode<T>::TreeNode()
+{
+    this->maxKeys = this->getMaxKeys();
+    this->keys = new T[maxKeys];
+    this->pointers = new TreeNode<T> *[maxKeys + 1];
+    for (int i = 0; i < maxKeys + 1; i++)
+    {
+        pointers[i] = NULL;
+    }
+}
+
+template <typename T>
+TreeNode<T>::TreeNode(size_t blockSize)
+{
+    this->blockSize = blockSize;
+    TreeNode();
+}
+
+template <typename T>
+T TreeNode<T>::getKey(int index)
+{
+    return this->keys[index];
+}
+
+template <typename T>
+TreeNode<T>* TreeNode<T>::getPointer(int index)
+{
+    return this->pointers[index];
+}
+
+template <typename T>
+int TreeNode<T>::getNumOfKeys()
+{
+    return this->numOfKeys;
+}
+
+template <typename T>
+bool TreeNode<T>::getLeaf()
+{
+    return this->isLeaf;
+}
+
+template <typename T>
+void TreeNode<T>::setKey(int index, T value)
+{
+    this->keys[index] = value;
+}
+
+template <typename T>
+void TreeNode<T>::setPointer(int index, TreeNode<T>* pointer)
+{
+    this->pointers[index] = pointer;
+}
+
+template <typename T>
+void TreeNode<T>::setNumOfKeys(int numOfKeys)
+{
+    this->numOfKeys = numOfKeys;
+}
+
+template <typename T>
+void TreeNode<T>::setLeaf(bool isLeaf)
+{
+    this->isLeaf = isLeaf;
+}
+
+template <typename T>
+int TreeNode<T>::getMaxKeys()
+{
+    // TODO: 回头加上了blocksize一起算
+    return 3; // 先hardcode
+}
+
+//tree
 template <typename T>
 BPlusTree<T>::BPlusTree()
 {
@@ -51,6 +132,7 @@ void BPlusTree<T>::levelDisplay(TreeNode<T> *cursor)
     }
 }
 
+//insert
 template <typename T>
 void BPlusTree<T>::insert(T value)
 {
@@ -317,6 +399,260 @@ TreeNode<T>* BPlusTree<T>::findParent(TreeNode<T> *cursor, TreeNode<T> *child)
     return parent;
 }
 
+template <typename T>
+void BPlusTree<T>::remove(int x, int &numDel, int &numUpd) {
+  
+  if (root == NULL) {
+    cout << "Tree empty\n";
+  } else {
+    TreeNode<T> *cursor = root;
+    TreeNode<T> *parent;
+    int leftSibling, rightSibling;
+    while (cursor->getLeaf() == false) {
+      for (int i = 0; i < cursor->getNumOfKeys(); i++) {
+        parent = cursor;
+        leftSibling = i - 1;
+        rightSibling = i + 1;
+        if (x < cursor->getKey(i)) {
+          cursor = cursor->getPointer(i);
+          break;
+        }
+        if (i == cursor->getNumOfKeys() - 1) {
+          leftSibling = i;
+          rightSibling = i + 2;
+          cursor = cursor->getPointer(i + 1);
+          break;
+        }
+      }
+    }
+    bool found = false;
+    int pos;
+    for (pos = 0; pos < cursor->getNumOfKeys(); pos++) {
+      if (cursor->getKey(pos) == x) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      cout << "Not found\n";
+      return;
+    }
+    for (int i = pos; i < cursor->getNumOfKeys(); i++) {
+      cursor->setKey(i, cursor->getKey(i + 1));
+    }
+    cursor->setNumOfKeys(cursor->getNumOfKeys()-1);
+    if (cursor == root) {
+      for (int i = 0; i < MAX + 1; i++) {
+        cursor->setPointer(i, NULL);
+      }
+      if (cursor->getNumOfKeys() == 0) {
+        numDel++; 
+        delete cursor;
+        root = NULL;
+      }
+      return;
+    }
+    cursor->setPointer(cursor->getNumOfKeys(), cursor->getPointer(cursor->getNumOfKeys() + 1));
+    //set record as null
+    cursor->setPointer(cursor->getNumOfKeys() + 1, NULL);
+    if (cursor->getNumOfKeys() >= (MAX + 1) / 2) {
+      numUpd++;
+      return;
+    }
+    if (leftSibling >= 0) {
+      TreeNode<T> *leftNode = parent->getPointer(leftSibling);
+      if (leftNode->getNumOfKeys() >= (MAX + 1) / 2 ) {
+        for (int i = cursor->getNumOfKeys(); i > 0; i--) {
+          cursor->setKey(i, cursor->getKey(i-1));
+        }
+        cursor->setNumOfKeys(cursor->getNumOfKeys()+1);
+        cursor->setPointer(cursor->getNumOfKeys(), cursor->getPointer(cursor->getNumOfKeys() - 1));
+        cursor->setPointer(cursor->getNumOfKeys() - 1, NULL);
+        cursor->setKey(0, leftNode->getKey(leftNode->getNumOfKeys() - 1));
+        leftNode->setNumOfKeys(cursor->getNumOfKeys()-1);
+        leftNode->setPointer(leftNode->getNumOfKeys(), cursor);
+        leftNode->setPointer(leftNode->getNumOfKeys() + 1, NULL);
+        parent->setKey(leftSibling, cursor->getKey(0));
+        numUpd++;
+        return;
+      }
+    }
+    if (rightSibling <= parent->getNumOfKeys()) {
+      TreeNode<T> *rightNode = parent->getPointer(rightSibling);
+      if (rightNode->getNumOfKeys() >= (MAX + 1) / 2 + 1) {
+        cursor->setNumOfKeys(cursor->getNumOfKeys()+1);
+        cursor->setPointer(cursor->getNumOfKeys(), cursor->getPointer(cursor->getNumOfKeys() - 1));
+        cursor->setPointer(cursor->getNumOfKeys() - 1, NULL);
+        cursor->setKey(cursor->getNumOfKeys() - 1, rightNode->getKey(0));
+        rightNode->setNumOfKeys(cursor->getNumOfKeys()-1);
+        rightNode->setPointer(rightNode->getNumOfKeys(), rightNode->getPointer(rightNode->getNumOfKeys() + 1));
+        rightNode->setPointer(rightNode->getNumOfKeys() + 1, NULL);
+        for (int i = 0; i < rightNode->getNumOfKeys(); i++) {
+          rightNode->setKey(i, rightNode->getKey(i+1));
+        }
+        parent->setKey(rightSibling-1, rightNode->getKey(0));
+        numUpd++;
+        return;
+      }
+    }
+    if (leftSibling >= 0) {
+      TreeNode<T> *leftNode = parent->getPointer(leftSibling);
+      for (int i = leftNode->getNumOfKeys(), j = 0; j < cursor->getNumOfKeys(); i++, j++) {
+        leftNode->setKey(i, cursor->getKey(j));
+      }
+      leftNode->setPointer(leftNode->getNumOfKeys(),NULL);
+      leftNode->setNumOfKeys(leftNode->getNumOfKeys() + cursor->getNumOfKeys());
+      leftNode->setPointer(leftNode->getNumOfKeys(), cursor->getPointer(cursor->getNumOfKeys()));
+      numDel++;
+      removeInternal(parent->getKey(leftSibling),parent,cursor);
+      
+      delete cursor;
+    } else if (rightSibling <= parent->getNumOfKeys()) {
+      TreeNode<T> *rightNode = parent->getPointer(rightSibling);
+      for (int i = cursor->getNumOfKeys(), j = 0; j < rightNode->getNumOfKeys(); i++, j++) {
+        cursor->setKey(i, rightNode->getKey(j));
+      }
+      cursor->setPointer(cursor->getNumOfKeys(),NULL);
+      cursor->setNumOfKeys(cursor->getNumOfKeys()+rightNode->getNumOfKeys());
+      cursor->setPointer(cursor->getNumOfKeys(),rightNode->getPointer(rightNode->getNumOfKeys()) );
+      cout << "Merging two leaf nodes\n";
+      numDel++;
+      removeInternal(parent->getKey(rightSibling-1),parent,rightNode);
+      delete rightNode;
+
+    }
+  }
+}
+
+template <typename T>
+void BPlusTree<T>::removeInternal(int x, TreeNode<T> *cursor, TreeNode<T> *child) {
+  //numDel++;
+  if (cursor == root) {
+    if (cursor->getNumOfKeys()== 1) {
+      if (cursor->getPointer(1) == child) {
+        delete child;
+        root = cursor->getPointer(0);
+        delete cursor;
+        cout << "Changed root node\n";
+        return;
+      } else if (cursor->getPointer(0) == child) {
+        delete child;
+        root = cursor->getPointer(1);
+        delete cursor;
+        cout << "Changed root node\n";
+        return;
+      }
+    }
+  }
+  int pos;
+  for (pos = 0; pos < cursor->getNumOfKeys(); pos++) {
+    if (cursor->getKey(pos) == x) {
+      break;
+    }
+  }
+  for (int i = pos; i < cursor->getNumOfKeys(); i++) {
+    cursor->setKey(i, cursor->getKey(i+1));
+  }
+  for (pos = 0; pos < cursor->getNumOfKeys() + 1; pos++) {
+    if(cursor->getPointer(pos)==child){
+    }
+  }
+  for (int i = pos; i < cursor->getNumOfKeys() + 1; i++) {
+    cursor->setPointer(i, cursor->getPointer(i+1));
+  }
+  cursor->setNumOfKeys(cursor->getNumOfKeys()-1);
+  if (cursor->getNumOfKeys() >= (MAX + 1) / 2 - 1 ) {
+    return;
+  }
+  if (cursor == root)
+    return;
+  TreeNode<T> *parent = findParent(root, cursor);
+  int leftSibling, rightSibling;
+  for (pos = 0; pos < parent->getNumOfKeys() + 1; pos++) {
+    if (parent->getPointer(pos) == cursor) {
+      leftSibling = pos - 1;
+      rightSibling = pos + 1;
+      break;
+    }
+  }
+  if (leftSibling >= 0) {
+    TreeNode<T> *leftNode = parent->getPointer(leftSibling);
+    if (leftNode->getNumOfKeys() >= (MAX + 1) / 2) {
+      for (int i = cursor->getNumOfKeys(); i > 0; i--) {
+        cursor->setKey(i, cursor->getKey(i-1));
+      }
+      cursor->setKey(0, parent->getKey(leftSibling));
+      parent->setKey(leftSibling, leftNode->getKey(leftNode->getNumOfKeys()-1));
+      for (int i = cursor->getNumOfKeys() + 1; i > 0; i--) {
+        cursor->setPointer(i, cursor->getPointer(i-1));
+      }
+      cursor->setPointer(0, leftNode->getPointer(leftNode->getNumOfKeys()));
+      cursor->setNumOfKeys(cursor->getNumOfKeys()+1);
+      leftNode->setNumOfKeys(leftNode->getNumOfKeys()-1);
+      return;
+    }
+  }
+  if (rightSibling <= parent->getNumOfKeys()) {
+    TreeNode<T> *rightNode = parent->getPointer(rightSibling);
+    if (rightNode->getNumOfKeys() >= (MAX + 1) / 2) {
+      cursor->setKey(cursor->getNumOfKeys(), parent->getKey(pos));
+      parent->setKey(pos, rightNode->getKey(0));
+      for (int i = 0; i < rightNode->getNumOfKeys() - 1; i++) {
+        rightNode->setKey(i, rightNode->getKey(i+1));
+      }
+      cursor->setPointer(cursor->getNumOfKeys()+1, rightNode->getPointer(0));
+      for (int i = 0; i < rightNode->getNumOfKeys(); ++i) {
+        rightNode->setPointer(i, rightNode->getPointer(i+1));
+      }
+      cursor->setNumOfKeys(cursor->getNumOfKeys()+1);
+      rightNode->setNumOfKeys(rightNode->getNumOfKeys()-1);
+      return;
+    }
+  }
+  if (leftSibling >= 0) {
+    TreeNode<T> *leftNode = parent->getPointer(leftSibling);
+    leftNode->setKey(leftNode->getNumOfKeys(), parent->getKey(leftSibling));
+    for (int i = leftNode->getNumOfKeys() + 1, j = 0; j < cursor->getNumOfKeys(); j++) {
+      leftNode->setKey(i, cursor->getKey(j));
+    }
+    for (int i = leftNode->getNumOfKeys() + 1, j = 0; j < cursor->getNumOfKeys() + 1; j++) {
+      leftNode->setPointer(i, cursor->getPointer(j));
+      cursor->setPointer(j, NULL);
+    }
+    leftNode->setNumOfKeys(leftNode->getNumOfKeys() + cursor->getNumOfKeys()+1);
+    cursor->setNumOfKeys(0);
+    removeInternal(parent->getKey(leftSibling), parent, cursor);
+  } else if (rightSibling <= parent->getNumOfKeys()) {
+    TreeNode<T> *rightNode = parent->getPointer(rightSibling);
+    cursor->setKey(cursor->getNumOfKeys(), parent->getKey(rightSibling-1));
+    for (int i = cursor->getNumOfKeys() + 1, j = 0; j < rightNode->getNumOfKeys(); j++) {
+      cursor->setKey(i, rightNode->getKey(j));
+    }
+    for (int i = cursor->getNumOfKeys() + 1, j = 0; j < rightNode->getNumOfKeys() + 1; j++) {
+      cursor->setPointer(i, rightNode->getPointer(j));
+      rightNode->setPointer(j,NULL);
+    }
+    cursor->setNumOfKeys(cursor->getNumOfKeys()+rightNode->getNumOfKeys()+1);
+    rightNode->setNumOfKeys(0);
+    removeInternal(parent->getKey(rightSibling - 1), parent, rightNode);
+  }
+}
+
+template <typename T>
+void BPlusTree<T>::getFirstLeaf(){
+  TreeNode<T> *node;
+  if(root==NULL){
+    cout<<"empty tree"<<endl;
+  }else{
+    node = root;
+    while(!node->getLeaf()){
+      node=node->getPointer(0);
+    }
+    cout<<"first leaf, first element: "<<node->getKey(0)<<endl;
+  }
+}
+
+
 int main()
 {
     BPlusTree<int> bptree;
@@ -330,9 +666,23 @@ int main()
     bptree.insert(31);
     bptree.insert(25);
     bptree.insert(19);
-    // bptree.insert(20);
-    // bptree.insert(28);
-    // bptree.insert(42);
+    //bptree.insert(20);
+    bptree.insert(28);
+    //bptree.insert(42);
     cout << "root: " << bptree.getRoot()->getKey(0) << endl;
     bptree.levelDisplay(bptree.getRoot());
+    int numU = 0;
+    int numD = 0;
+    //bptree.remove(4, numD, numU);
+    bptree.remove(1, numD, numU);
+    //bptree.remove(7, numD, numU);
+    cout<<"num updates: "<<numU<<endl;
+    cout<<"num delete/merge: "<<numD<<endl;
+    cout << "root: " << bptree.getRoot()->getKey(0) << endl;
+    bptree.levelDisplay(bptree.getRoot());
+    bptree.getFirstLeaf();
+    //cout<<bptree.getRoot()->getKey(0)<<endl;
+    //cout<<bptree.getRoot()->getKey(1)<<endl;
+    //cout<<bptree.getRoot()->getKey(2)<<endl;
+
 }
