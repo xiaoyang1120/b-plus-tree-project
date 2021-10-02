@@ -27,6 +27,7 @@ public:
     TreeNode* getPointer(int index);
     int getNumOfKeys();
     bool getLeaf();
+    Address* getDisk(){ return disk; };
 
     void setKey(int index, int value);
     void setPointer(int index, TreeNode* pointer);

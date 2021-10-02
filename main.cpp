@@ -23,7 +23,17 @@ int main()
      // bptree.insert(28);
      // bptree.insert(42);
      cout << "root: " << bptree.getRoot()->getKey(0) << endl;
-     bptree.levelDisplay(bptree.getRoot());
+    bptree.levelDisplay(bptree.getRoot());
+    int numU = 0;
+    int numD = 0;
+    //bptree.remove(4, numD, numU);
+    bptree.remove(1, numD, numU);
+    //bptree.remove(7, numD, numU);
+    cout<<"num updates: "<<numU<<endl;
+    cout<<"num delete/merge: "<<numD<<endl;
+    cout << "root: " << bptree.getRoot()->getKey(0) << endl;
+    bptree.levelDisplay(bptree.getRoot());
+    bptree.getFirstLeaf();
 
     int select = 0;
     cout<<"Select Block Size:"<<endl;

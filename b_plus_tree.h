@@ -18,9 +18,11 @@ private:
     TreeNode *root;
 
     int getMaxKeys();
+
     void insertInternal(int value, TreeNode *cursor, TreeNode *child);
     TreeNode *findParent(TreeNode *cursor, TreeNode *child);
     int findParentValue(TreeNode *cursor);
+
 public:
     // Constructor
     BPlusTree();
@@ -30,6 +32,9 @@ public:
     void levelDisplay(TreeNode *cursor);
     void insert(int value); // 其实应该要带record
     void search(int leftValue, int rightValue);
+    void remove(int x, int &numDel, int &numUpd);
+    void removeInternal(int x, TreeNode *cursor, TreeNode *child);
+    void getFirstLeaf();
 };
 
 #endif
