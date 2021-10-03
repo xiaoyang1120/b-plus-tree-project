@@ -21,7 +21,7 @@ using namespace std;
 
 int main()
 {    
-    int BLOCKSIZE = 500;
+    int BLOCKSIZE = 100;
     MemoryPool disk(150000000, BLOCKSIZE);  // 150MB
     MemoryPool index(350000000, BLOCKSIZE); // 350MB
 

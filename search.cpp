@@ -61,7 +61,7 @@ void BPlusTree::search(int left, int right) {
                    // cout << cursor->getKey(idx) << endl;
                    // here should print the record block
                    //TODO
-                   cout << "--This should be a data block content.--" << endl;
+                   // cout << "--This should be a data block content.--" << endl;
                }
            }
         // if next leaf node exists, go to next leaf node and display, then update cursor
