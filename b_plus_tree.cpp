@@ -1,6 +1,6 @@
 #include "b_plus_tree.h"
 #include "tree_node.h"
-//#include "tree_node.cpp"
+#include "tree_node.cpp"
 
 #include <iostream>
 #include <cstddef>
@@ -371,7 +371,7 @@ int BPlusTree::findParentValue(TreeNode *cursor)
 
 int MAX = 3;
 
-void BPlusTree::remove(int x, int &numDel, int &numUpd) {
+void BPlusTree::remove(int x, int &numDel, int &numUpd, bool &noMore) {
 
   if (root == NULL) {
     cout << "Tree empty\n";
@@ -404,8 +404,10 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
         break;
       }
     }
+    
     if (!found) {
       cout << "Not found\n";
+      noMore=true;
       return;
     }
     for (int i = pos; i < cursor->getNumOfKeys(); i++) {
@@ -417,12 +419,13 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
         cursor->setPointer(i, NULL);
       }
       if (cursor->getNumOfKeys() == 0) {
-        numDel++;
         delete cursor;
         root = NULL;
+        numDel++;
       }
       return;
     }
+    numUpd++;
     cursor->setPointer(cursor->getNumOfKeys(), cursor->getPointer(cursor->getNumOfKeys() + 1));
     //set record as null
     cursor->setPointer(cursor->getNumOfKeys() + 1, NULL);
@@ -444,7 +447,7 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
         leftNode->setPointer(leftNode->getNumOfKeys(), cursor);
         leftNode->setPointer(leftNode->getNumOfKeys() + 1, NULL);
         parent->setKey(leftSibling, cursor->getKey(0));
-        numUpd++;
+        numUpd+=2;
         return;
       }
     }
@@ -462,7 +465,7 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
           rightNode->setKey(i, rightNode->getKey(i+1));
         }
         parent->setKey(rightSibling-1, rightNode->getKey(0));
-        numUpd++;
+        numUpd+=2;
         return;
       }
     }
@@ -475,6 +478,7 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
       leftNode->setNumOfKeys(leftNode->getNumOfKeys() + cursor->getNumOfKeys());
       leftNode->setPointer(leftNode->getNumOfKeys(), cursor->getPointer(cursor->getNumOfKeys()));
       numDel++;
+      numUpd++;
       removeInternal(parent->getKey(leftSibling),parent,cursor);
 
       delete cursor;
@@ -488,6 +492,7 @@ void BPlusTree::remove(int x, int &numDel, int &numUpd) {
       cursor->setPointer(cursor->getNumOfKeys(),rightNode->getPointer(rightNode->getNumOfKeys()) );
       cout << "Merging two leaf nodes\n";
       numDel++;
+      numUpd++;
       removeInternal(parent->getKey(rightSibling-1),parent,rightNode);
       delete rightNode;
 

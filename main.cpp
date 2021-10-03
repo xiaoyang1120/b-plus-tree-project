@@ -2,9 +2,10 @@
 #include "memory_pool.h"
 #include "tree_node.h"
 #include "record.h"
-//#include "memory_pool.cpp"
-//#include "b_plus_tree.cpp"
-//#include "record.cpp"
+#include "memory_pool.cpp"
+#include "b_plus_tree.cpp"
+#include "record.cpp"
+#include "search.cpp"
 
 #include <iostream>
 #include <fstream>
@@ -21,11 +22,12 @@
 using namespace std;
 
 int main()
-{
-    int BLOCKSIZE = 100;
+{    
+    int BLOCKSIZE = 500;
     MemoryPool disk(150000000, BLOCKSIZE);  // 150MB
     MemoryPool index(350000000, BLOCKSIZE); // 350MB
 
+    
     // Creating the tree
     BPlusTree tree = BPlusTree(BLOCKSIZE, &disk, &index);
     cout << "max keys: " << tree.getMaxKeys() << endl;
@@ -76,7 +78,7 @@ int main()
         file.close();
     }
 
-    tree.search(500, 500);
+    //tree.search(500, 500);
 
     cout << "Parameter n: " << tree.getMaxKeys() << endl;
     cout << "Number of nodes: " << tree.getNumOfNodes() << endl;
@@ -95,39 +97,43 @@ int main()
     tree.displayNode(tree.getRoot()->getPointer(0));
 
     cout << endl;
-
+    
 
     cout << "Block Size: " << BLOCKSIZE << endl;
     cout << "Record Number: " << recordNum << endl;
     cout << "Number of Blocks: " << disk.getNumAllocated() << endl;
     cout << "Total Disk Size Used: " << disk.getTotalBlockSizeUsed() << "B" << endl;
-//    BPlusTree bptree;
-//     // int numbers[12] = {1, 4, 7, 10, 17, 21, 31, 25, 19, 20, 28, 42};
-//     bptree.insert(1);
-//     bptree.insert(4);
-//     bptree.insert(7);
-//     bptree.insert(10);
-//     bptree.insert(17);
-//     bptree.insert(21);
-//     bptree.insert(31);
-//     bptree.insert(25);
-//     bptree.insert(19);
-//     bptree.insert(20);
-//     bptree.insert(28);
-//     bptree.insert(42);
-//     cout << "root: " << bptree.getRoot()->getKey(0) << endl;
-//    bptree.display(bptree.getRoot());
-//    int numU = 0;
-//    int numD = 0;
-//    bptree.remove(4, numD, numU);
-//    bptree.remove(1, numD, numU);
-//    bptree.remove(7, numD, numU);
-//    cout<<"num updates: "<<numU<<endl;
-//    cout<<"num delete/merge: "<<numD<<endl;
-//    cout << "root: " << bptree.getRoot()->getKey(0) << endl;
-//    bptree.display(bptree.getRoot());
-//    bptree.getFirstLeaf();
+    
+    int numUpd =0;
+    int numDel =0;
+    bool noMore=false;
+    while(!noMore){
+        tree.remove(500,numDel,numUpd,noMore);
+    }
+    cout << "Height: " << tree.getHeight() << endl;
+    cout<<"Number of nodes updated: "<<numUpd<<endl;
+    cout<<"Number of nodes deleted/merged: "<<numDel<<endl;
 
+
+    cout << endl;
+   cout << "Content of root: " << endl;
+    // for (int i = 0; i < tree.getRoot()->getNumOfKeys(); i++) {
+    //     cout << tree.getRoot()->getKey(i) << " ";
+    // }
+    tree.displayNode(tree.getRoot());
+    cout << endl;
+    cout << "Content of first child node of root: " << endl;
+
+    // for (int i = 0; i < tree.getRoot()->getPointer(0)->getNumOfKeys(); i++) {
+    //     cout << tree.getRoot()->getPointer(0)->getKey(i) << " ";
+    // }
+    tree.displayNode(tree.getRoot()->getPointer(0));
+
+    cout<<endl;
+    
+
+
+   
     // int select = 0;
     // cout<<"Select Block Size:"<<endl;
     // do{

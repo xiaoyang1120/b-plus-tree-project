@@ -36,7 +36,7 @@ public:
     
     void insert(int value);
     void search(int leftValue, int rightValue);
-    void remove(int x, int &numDel, int &numUpd);
+    void remove(int x, int &numDel, int &numUpd, bool &noMore);
     void getFirstLeaf();
 
     int getNumOfNodes();
