@@ -1,5 +1,4 @@
-#pragma comment(linker, "/STACK:1073741824")
-//#pragma comment(linker, "/STACK:102400000,102400000")
+#pragma comment(linker, "/STACK:1073741824*1024*1024")
 #include "b_plus_tree.h"
 #include "memory_pool.h"
 #include "tree_node.h"

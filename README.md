@@ -25,3 +25,5 @@
 
 - Remain on root directory where `main.cpp` locates and compile the executable.
 - Run `main.cpp`
+- **IMPORTANT**
+  If the `main.cpp` gets stuck at reading Records, please exit the VSCode and restart and run until it works.
