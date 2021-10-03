@@ -128,19 +128,26 @@ int main()
     cout<<"Average rating: "<<endl;
     cout<<endl;
 
+    int numUpd =0;
+    int numDel =0;
+    bool noMore=false;
+    while(!noMore){
+        tree.remove(1000,numDel,numUpd,noMore);
+    }
+
+    cout<<endl;
+
     //delete movies with votes = 1000
     cout<<"Experiment 5"<<endl;
-    cout<<"Number of index nodes deleted or merged: "<<endl;
-    cout<<"Number of index nodes updated: "<<endl;
-    cout<<"Height of B+ tree"<<endl;
+    cout<<"Number of index nodes deleted or merged: "<<numDel<<endl;
+    cout<<"Number of index nodes updated: "<<numUpd<<endl;
+    cout<<"Height of B+ tree: "<<tree.getHeight()<<endl;
     cout<<"Content of root node: "<<endl;
-    cout<<"tconst: "<<endl;
-    cout<<"Average Rating: "<<endl;
-    cout<<"Number of Votes: "<<endl;
+    tree.displayNode(tree.getRoot());
+    cout<<endl;
     cout<<"Content of first child node: "<<endl;
-    cout<<"tconst: "<<endl;
-    cout<<"Average Rating: "<<endl;
-    cout<<"Number of Votes: "<<endl;
+    tree.displayNode(tree.getRoot()->getPointer(0));
+    cout<<endl;
 
 
     return 0;
