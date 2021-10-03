@@ -15,61 +15,87 @@ void BPlusTree::search(int left, int right) {
     } else {
         //maintain a number of nodes visited
 
-        Address rootAddress{diskRootAddress, 0};
-        root = (TreeNode *) index->load(rootAddress, blockSize);
+//        Address rootAddress{diskRootAddress, 0};
+//        root = (TreeNode *) index->load(rootAddress, blockSize);
 
         //show the content of accessed node
-        std::cout << "Treenode accessing: ";
-        display(root);
+        std::cout << "Root Treenode accessing: ";
+        for (int i = 0; i < root->getNumOfKeys(); i++)
+        {
+            cout << root->getKey(i) << " ";
+        }
+        cout << "\n";
         numberOfAccessedNodes++;
 
-        TreeNode* cur = root;
+        TreeNode* cursor = root;
         bool flag = false;
 
-        while (!cur->getLeaf()) {
-            for (int i = 0; i < cur->getNumOfKeys(); i++)
+        while (!cursor->getLeaf()) {
+            for (int i = 0; i < cursor->getNumOfKeys(); i++)
             {
-                if (left < cur->getKey(i)) {
-                    cur = (TreeNode*) index->load(cur->getDisk()[i], blockSize);
+                if (left < cursor->getKey(i)) {
+                    cursor = cursor->getPointer(i);
+//                    cursor = (TreeNode*) index->load(cursor->getDisk()[i], blockSize);
                     // cout << i << endl;
                     std::cout << "Treenode accessing: ";
-                    display(cur);
+                    for (int i = 0; i < cursor->getNumOfKeys(); i++)
+                    {
+                        cout << cursor->getKey(i) << " ";
+                    }
+                    cout << "\n";
+                    numberOfAccessedNodes++;
                     break;
                 }
-                if (i == cur->getNumOfKeys()-1 ) {
-                    cur = (TreeNode*) index->load(cur->getDisk()[i+1], blockSize);
+                if (i == cursor->getNumOfKeys()-1 ) {
+                    cursor = cursor->getPointer(i+1);
+//                    cursor = (TreeNode*) index->load(cursor->getDisk()[i+1], blockSize);
                     // cout << i << endl;
                     std::cout << "Treenode accessing: ";
-                    display(cur);
+                    for (int i = 0; i < cursor->getNumOfKeys(); i++)
+                    {
+                        cout << cursor->getKey(i) << " ";
+                    }
+                    cout << "\n";
+                    numberOfAccessedNodes++;
                     break;
                 }
                 
             }
         }
 
-        while (!flag) {
-            int idx = 0;
-            for (; idx < cur->getNumOfKeys(); idx++) {
-                if (cur->getKey(idx) > right) {
-                    flag = true; // find the right boundary
-                    break;
-                }
-                if (cur->getKey(idx) <= right && cur->getKey(idx) >= left) {
-                    // cout << cur->getKey(idx) << endl;
-                    std::cout << "Treenode (leaf node) accessing: ";
-                    display(cur);
-                    // here should print the record block
-                    //TODO
-                }
-            }
+//        while (!flag) {
+//            int idx = 0;
+//            for (; idx < cursor->getNumOfKeys(); idx++) {
+//                if (cursor->getKey(idx) > right) {
+//                    flag = true; // find the right boundary
+//                    cout << "Number of accessed nodes: " << numberOfAccessedNodes << endl;
+//                    return;
+//                }
+//                if (cursor->getKey(idx) <= right && cursor->getKey(idx) >= left) {
+//                    // cout << cursor->getKey(idx) << endl;
+////                    std::cout << "Treenode (leaf node) accessing: ";
+////                    cout << cursor->getKey(idx) << " ";
+////                    cout << "\n";
+//                    // here should print the record block
+//                    //TODO
+//                }
+//            }
+//            cursor = cursor->getPointer(cursor->getNumOfKeys());
+////            if (cursor != nullptr && cursor->getKey(idx) <= right) {
+//
+////                cursor = (TreeNode*)index->load(cursor->getDisk()[cursor->getNumOfKeys()], blockSize);
+//                std::cout << "Treenode accessing: ";
+//                for (int i = 0; i < cursor->getNumOfKeys(); i++)
+//                {
+//                    cout << cursor->getKey(i) << " ";
+//                }
+//                cout << endl;
+//                numberOfAccessedNodes++;
 
-            if (cur->getDisk()[cur->getNumOfKeys()].blockAddress != nullptr && cur->getKey(idx) != right) {
-                cur = (TreeNode*)index->load(cur->getDisk()[cur->getNumOfKeys()], blockSize);
-                std::cout << "Treenode accessing: ";
-                display(cur);
-            } else {
-                flag = true;
-            }
-        }
+//            } else {
+//                flag = true;
+//            }
+//        }
+
     }
 }

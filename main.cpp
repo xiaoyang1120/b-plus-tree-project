@@ -2,9 +2,9 @@
 #include "memory_pool.h"
 #include "tree_node.h"
 #include "record.h"
-#include "memory_pool.cpp"
-#include "b_plus_tree.cpp"
-#include "record.cpp"
+//#include "memory_pool.cpp"
+//#include "b_plus_tree.cpp"
+//#include "record.cpp"
 
 #include <iostream>
 #include <fstream>
@@ -75,6 +75,8 @@ int main()
         }
         file.close();
     }
+
+    tree.search(500, 500);
 
     cout << "Parameter n: " << tree.getMaxKeys() << endl;
     cout << "Number of nodes: " << tree.getNumOfNodes() << endl;
