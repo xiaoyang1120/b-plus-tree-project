@@ -128,27 +128,27 @@ int main()
 //    bptree.display(bptree.getRoot());
 //    bptree.getFirstLeaf();
 
-    int select = 0;
-    cout<<"Select Block Size:"<<endl;
-    do{
-        cout<<"1. 100B"<<endl;
-        cout<<"2. 500B"<<endl;
-        cin>>select;
-    }
-    while(select!=1 && select!=2);
+    // int select = 0;
+    // cout<<"Select Block Size:"<<endl;
+    // do{
+    //     cout<<"1. 100B"<<endl;
+    //     cout<<"2. 500B"<<endl;
+    //     cin>>select;
+    // }
+    // while(select!=1 && select!=2);
 
     //read data
 
-    ifstream infile("data.tsv");
-    string a, b, c;
-    while (infile >> a >> b >> c)
-    {
-        // process tconst, avgRating and numVotes
-        // cout<<a<<endl;
-        // create record
-	// create a data block if there no data block or current data block is full
-	// insert record into data block
-    }
+    // ifstream infile("data.tsv");
+    // string a, b, c;
+    // while (infile >> a >> b >> c)
+    // {
+    //     // process tconst, avgRating and numVotes
+    //     // cout<<a<<endl;
+    //     // create record
+	// // create a data block if there no data block or current data block is full
+	// // insert record into data block
+    // }
 
 
     cout<<"Experiment 1"<<endl;
