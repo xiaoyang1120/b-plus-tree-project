@@ -30,6 +30,29 @@ int main()
     BPlusTree tree = BPlusTree(BLOCKSIZE, &disk, &index);
     cout << "max keys: " << tree.getMaxKeys() << endl;
 
+    // int numbers[12] = {1, 4, 7, 10, 17, 21, 31, 25, 19, 20, 28, 42};
+    // for (int i = 0; i < 12; i++) {
+    //     tree.insert(numbers[i]);
+    // }
+    // tree.displayTree(tree.getRoot());
+
+    // TreeNode *cursor = tree.getRoot();
+    // while (!cursor->getLeaf()) {
+    //     cursor = cursor->getPointer(0);
+    // }
+    // // cursor = cursor->getPointer(cursor->getNumOfKeys());
+    // // cursor = cursor->getPointer(0);
+
+    // cout << endl;
+
+    // while (cursor != NULL) {
+    //     tree.displayNode(cursor);
+    //     cursor = cursor->getPointer(cursor->getNumOfKeys());
+    //     cout << endl;
+    // }
+
+    // return 0;
+
     std::cout <<"Reading in data ... "<<endl;
     std::ifstream file("data/data.tsv"); // actual data
     // std::ifstream file("../data/testdata.tsv"); // testing data

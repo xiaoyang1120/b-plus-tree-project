@@ -76,6 +76,11 @@ void BPlusTree::displayNode(TreeNode *cursor)
     {
         cout << cursor->getKey(i) << " ";
     }
+
+    // for (int i = 0; i <= cursor->getNumOfKeys(); i++)
+    // {
+    //     cout << cursor->getPointer(i) << " ";
+    // }
 }
 
 void BPlusTree::insert(int value)
@@ -123,6 +128,7 @@ void BPlusTree::insert(int value)
             position++;
         }
 
+        cursor->setPointer(cursor->getNumOfKeys() + 1, cursor->getPointer(cursor->getNumOfKeys()));
         // move the keys after the position one step to the right
         for (int i = cursor->getNumOfKeys(); i > position; i--)
         {
@@ -161,10 +167,14 @@ void BPlusTree::insert(int value)
         }
 
         // move the keys after the position one step to the right
-        for (int i = this->maxKeys + 1; i > position; i--)
+        for (int i = this->maxKeys; i > position; i--)
         {
             virtualKeys[i] = virtualKeys[i - 1];
-            virtualPointers[i] = virtualPointers[i - 1]; // leaf node: key i <-> pointer i
+        }
+
+        for (int i = this->maxKeys + 1; i > position; i--)
+        {
+            virtualPointers[i] = virtualPointers[i - 1];
         }
 
         // insert
@@ -177,23 +187,26 @@ void BPlusTree::insert(int value)
         cursor->setNumOfKeys(leftNumOfKeys);
         newLeafNode->setNumOfKeys(rightNumOfKeys);
 
-        // last pointer of left node points to the right node
-        cursor->setPointer(cursor->getNumOfKeys(), newLeafNode);
-        // last pointer of right node points to the original right node of left node
-        newLeafNode->setPointer(newLeafNode->getNumOfKeys(), cursor->getPointer(this->maxKeys));
-        cursor->setPointer(this->maxKeys, NULL);
-
-        // copy virtual node value into right node
+        // copy virtual node value into left node
         for (int i = 0; i < cursor->getNumOfKeys(); i++)
         {
             cursor->setKey(i, virtualKeys[i]);
             cursor->setPointer(i, virtualPointers[i]);
         }
+        // copy virtual node value into right node
         for (int i = 0, j = cursor->getNumOfKeys(); i < newLeafNode->getNumOfKeys(); i++, j++)
         {
             newLeafNode->setKey(i, virtualKeys[j]);
             newLeafNode->setPointer(i, virtualPointers[j]);
         }
+
+        // last pointer of left node points to the right node
+        cursor->setPointer(cursor->getNumOfKeys(), newLeafNode);
+        // last pointer of right node points to the original right node of left node
+        // newLeafNode->setPointer(newLeafNode->getNumOfKeys(), cursor->getPointer(this->maxKeys));
+        newLeafNode->setPointer(newLeafNode->getNumOfKeys(), virtualPointers[this->maxKeys + 1]);
+        cout << "insert: " << value << " left next: " << cursor->getPointer(cursor->getNumOfKeys()) << " right next: " <<virtualPointers[this->maxKeys + 1] << " ";
+        cursor->setPointer(this->maxKeys, NULL);
 
         // remove the useless pointers in left node
         for (int i = cursor->getNumOfKeys() + 1; i < this->maxKeys + 1; i++)

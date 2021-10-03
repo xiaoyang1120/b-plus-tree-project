@@ -16,6 +16,10 @@ TreeNode::TreeNode(size_t blockSize)
     this->maxKeys = TreeNode::calculateMaxKeys(blockSize);
     this->keys = new int[maxKeys];
     this->pointers = new TreeNode *[maxKeys + 1];
+    for (int i = 0; i <= maxKeys; i++)
+    {
+        this->pointers[i] = NULL;
+    }
 }
 
 int TreeNode::getKey(int index)
@@ -67,5 +71,6 @@ int TreeNode::calculateMaxKeys(size_t blockSize)
         sum += sizeof(int) + sizeof(TreeNode*);
     }
     
-    return maxKeys;
+    // return maxKeys;
+    return 3;
 }
