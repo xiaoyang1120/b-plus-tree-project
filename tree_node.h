@@ -19,7 +19,7 @@ private:
 public:
     // Constructor
     TreeNode();
-    TreeNode(size_t blockSize);
+    TreeNode(int blockSize);
 
     int getKey(int index);
     TreeNode* getPointer(int index);

@@ -20,18 +20,18 @@
 using namespace std;
 
 int main()
-{    
+{
     int BLOCKSIZE = 500;
     MemoryPool disk(150000000, BLOCKSIZE);  // 150MB
     MemoryPool index(350000000, BLOCKSIZE); // 350MB
 
-    
+
     // Creating the tree
     BPlusTree tree = BPlusTree(BLOCKSIZE, &disk, &index);
     cout << "max keys: " << tree.getMaxKeys() << endl;
 
     std::cout <<"Reading in data ... "<<endl;
-    std::ifstream file("data/data.tsv"); // actual data
+    std::ifstream file("../data/data.tsv"); // actual data
     // std::ifstream file("../data/testdata.tsv"); // testing data
 
     int recordNum = 0;
@@ -80,8 +80,8 @@ int main()
 
     cout << "Block Size: " << BLOCKSIZE << endl;
     cout << "Record Number: " << recordNum << endl;
-    
-    
+
+
     cout<<"Experiment 1"<<endl;
     cout << "Number of Blocks: " << disk.getNumAllocated() << endl;
     cout << "Total Disk Size Used: " << disk.getTotalBlockSizeUsed() << "B" << endl;

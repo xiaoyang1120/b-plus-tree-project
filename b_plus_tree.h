@@ -9,10 +9,6 @@
 class BPlusTree
 {
 private:
-    MemoryPool *disk;
-    MemoryPool *index;
-    void *diskRootAddress;
-
     size_t blockSize;
     int maxKeys;
     TreeNode *root;
@@ -26,9 +22,12 @@ private:
     void removeInternal(int x, TreeNode *cursor, TreeNode *child);
 
 public:
+    MemoryPool *disk;
+    MemoryPool *index;
+    void *diskRootAddress;
     // Constructor
     BPlusTree();
-    BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index);
+    BPlusTree(int blockSize, MemoryPool* disk, MemoryPool* index);
 
     TreeNode *getRoot();
     void displayTree(TreeNode *cursor);

@@ -36,6 +36,8 @@ public:
     
     Address save(void *itemAddress, size_t size);
 
+    Address save(void *itemAddress, size_t size, Address address);
+
     size_t getTotalPoolSize() {return totalPoolSize;}
 
     size_t getBlockSize() {return blockSize;}

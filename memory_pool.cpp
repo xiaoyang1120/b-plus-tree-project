@@ -52,7 +52,7 @@ Address MemoryPool::allocate(size_t size) {
     blockSizeUsed += size;
     totalRecordSizeUsed += size;
 
-    Address recordAddress = {block, index};
+    Address recordAddress{block, index};
 
     return recordAddress;
 }
@@ -72,6 +72,15 @@ Address MemoryPool::save(void *itemAddress, size_t size) {
     Address diskAddress = allocate(size);
     memcpy((char *)diskAddress.blockAddress + diskAddress.index, itemAddress, size);
     
+    blocksAccessed++;
+
+    return diskAddress;
+}
+
+Address MemoryPool::save(void *itemAddress, std::size_t size, Address diskAddress)
+{
+    std::memcpy((char *)diskAddress.blockAddress + diskAddress.index, itemAddress, size);
+
     blocksAccessed++;
 
     return diskAddress;

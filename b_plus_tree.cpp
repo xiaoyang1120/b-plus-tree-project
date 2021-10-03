@@ -13,10 +13,9 @@ BPlusTree::BPlusTree()
     this->root = NULL;
     this->height = 0;
     this->numOfNodes = 0;
-    this->maxKeys = 3;
 }
 
-BPlusTree::BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index)
+BPlusTree::BPlusTree(int blockSize, MemoryPool* disk, MemoryPool* index)
 {
     this->blockSize = blockSize;
     this->maxKeys = TreeNode::calculateMaxKeys(blockSize);
@@ -88,11 +87,15 @@ void BPlusTree::insert(int value)
         this->root->setNumOfKeys(1);
         this->height = 1;
         this->numOfNodes++;
+
+        this->diskRootAddress = index->save(this->root, blockSize).blockAddress;
         return;
     }
 
     TreeNode *cursor = this->root;
     TreeNode *parent;
+    void *parentDiskAddr = this->diskRootAddress;
+    void *cursorDiskAddr = this->diskRootAddress;
     while (!cursor->getLeaf()) // go along the way to locate to the leaf node to insert
     {
         parent = cursor;
@@ -100,12 +103,14 @@ void BPlusTree::insert(int value)
         {
             if (value < cursor->getKey(i)) // find the first position where value < keys[i]
             {
+                cursorDiskAddr = cursor->getDisk()[i].blockAddress;
                 cursor = cursor->getPointer(i); // go with its previous pointer
                 break;
             }
 
             if (i == cursor->getNumOfKeys() - 1) // reach the end
             {
+                cursorDiskAddr = cursor->getDisk()[i+1].blockAddress;
                 cursor = cursor->getPointer(i + 1); // the position is at last
                 break;
             }
@@ -134,7 +139,10 @@ void BPlusTree::insert(int value)
         // insert
         cursor->setKey(position, value);
         cursor->setNumOfKeys(cursor->getNumOfKeys() + 1);
-        cursor->setPointer(position, NULL); // TODO: hard code NULL for now, 应该是指向data block
+        cursor->setPointer(position, NULL);
+
+        Address cursorAddress{cursorDiskAddr, 0};
+        index->save(cursor, blockSize);
     }
     else // the leaf node is full, need to split
     {
@@ -174,8 +182,9 @@ void BPlusTree::insert(int value)
 
         // insert
         virtualKeys[position] = value;
-        virtualPointers[position] = NULL; // TODO: hard code NULL for now, 应该是指向data block
+        virtualPointers[position] = NULL;
         newLeafNode->setLeaf(true);
+        index->save(cursor, blockSize);
 
         int leftNumOfKeys = (this->maxKeys + 1) / 2;
         int rightNumOfKeys = this->maxKeys + 1 - leftNumOfKeys;
@@ -207,6 +216,8 @@ void BPlusTree::insert(int value)
         {
             cursor->setPointer(i, NULL);
         }
+        Address cursorAddress{cursorDiskAddr, 0};
+        index->save((void *) cursor, blockSize, cursorAddress);
 
         // the splitted leaf node is the only node in leaf level
         // need to produce another non-leaf level
@@ -218,6 +229,10 @@ void BPlusTree::insert(int value)
             newRoot->setPointer(1, newLeafNode);
             newRoot->setLeaf(false);
             newRoot->setNumOfKeys(1);
+
+            Address rootAddr = index->save(newRoot, blockSize);
+            diskRootAddress = rootAddr.blockAddress;
+
             this->root = newRoot;
             this->height++;
             this->numOfNodes++;
@@ -254,7 +269,9 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
         // insert
         cursor->setKey(position, value);
         cursor->setNumOfKeys(cursor->getNumOfKeys() + 1);
-        cursor->setPointer(position + 1, child);
+        cursor->setPointer(position + 1, child);\
+        Address cursorAddress{cursor, 0};
+        index->save(cursor, blockSize, cursorAddress);
     }
     else // full, need to balance the tree
     {
@@ -311,6 +328,9 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
             newInternalNode->setPointer(i, virtualPointers[j]);
         }
 
+        Address cursorAddr{cursor, 0};
+        index->save(cursor, blockSize, cursorAddr);
+
         if (cursor == this->root) // splitted node is the only node for the current level
         {
             TreeNode *newRoot = new TreeNode(this->blockSize);
@@ -319,6 +339,9 @@ void BPlusTree::insertInternal(int value, TreeNode *cursor, TreeNode *child)
             newRoot->setPointer(1, newInternalNode);
             newRoot->setLeaf(false);
             newRoot->setNumOfKeys(1);
+
+            Address rootAddr = index->save(newRoot, blockSize);
+            diskRootAddress = rootAddr.blockAddress;
             this->root = newRoot;
             this->height++;
             this->numOfNodes++;
