@@ -31,7 +31,9 @@ public:
     BPlusTree(size_t blockSize, MemoryPool* disk, MemoryPool* index);
 
     TreeNode *getRoot();
-    void display(TreeNode *cursor);
+    void displayTree(TreeNode *cursor);
+    void displayNode(TreeNode *cursor);
+    
     void insert(int value);
     void search(int leftValue, int rightValue);
     void remove(int x, int &numDel, int &numUpd);

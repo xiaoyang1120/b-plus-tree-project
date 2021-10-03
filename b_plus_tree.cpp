@@ -46,7 +46,7 @@ int BPlusTree::getHeight() {
   return this->height;
 }
 
-void BPlusTree::display(TreeNode *cursor)
+void BPlusTree::displayTree(TreeNode *cursor)
 {
     if (cursor != NULL)
     {
@@ -59,12 +59,24 @@ void BPlusTree::display(TreeNode *cursor)
         {
             for (int i = 0; i < cursor->getNumOfKeys() + 1; i++)
             {
-                display(cursor->getPointer(i));
+                displayTree(cursor->getPointer(i));
             }
         }
     }
 }
 
+void BPlusTree::displayNode(TreeNode *cursor)
+{
+    if (cursor == NULL) 
+    {
+      return;
+    }
+    
+    for (int i = 0; i < cursor->getNumOfKeys(); i++)
+    {
+        cout << cursor->getKey(i) << " ";
+    }
+}
 
 void BPlusTree::insert(int value)
 {

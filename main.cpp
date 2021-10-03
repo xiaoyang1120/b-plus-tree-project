@@ -31,7 +31,7 @@ int main()
     cout << "max keys: " << tree.getMaxKeys() << endl;
 
     std::cout <<"Reading in data ... "<<endl;
-    std::ifstream file("../data/data.tsv"); // actual data
+    std::ifstream file("data/data.tsv"); // actual data
     // std::ifstream file("../data/testdata.tsv"); // testing data
 
     int recordNum = 0;
@@ -82,15 +82,17 @@ int main()
     cout << "Number of nodes: " << tree.getNumOfNodes() << endl;
     cout << "Height: " << tree.getHeight() << endl;
     cout << "Content of root: " << endl;
-    for (int i = 0; i < tree.getRoot()->getNumOfKeys(); i++) {
-        cout << tree.getRoot()->getKey(i) << " ";
-    }
+    // for (int i = 0; i < tree.getRoot()->getNumOfKeys(); i++) {
+    //     cout << tree.getRoot()->getKey(i) << " ";
+    // }
+    tree.displayNode(tree.getRoot());
     cout << endl;
     cout << "Content of first child node of root: " << endl;
 
-    for (int i = 0; i < tree.getRoot()->getPointer(0)->getNumOfKeys(); i++) {
-        cout << tree.getRoot()->getPointer(0)->getKey(i) << " ";
-    }
+    // for (int i = 0; i < tree.getRoot()->getPointer(0)->getNumOfKeys(); i++) {
+    //     cout << tree.getRoot()->getPointer(0)->getKey(i) << " ";
+    // }
+    tree.displayNode(tree.getRoot()->getPointer(0));
 
     cout << endl;
 
