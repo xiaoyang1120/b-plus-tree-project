@@ -24,3 +24,4 @@
     ```
 
 - Remain on root directory where `main.cpp` locates and compile the executable.
+- Run `main.cpp`
