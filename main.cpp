@@ -4,10 +4,6 @@
 #include "memory_pool.h"
 #include "tree_node.h"
 #include "record.h"
-#include "memory_pool.cpp"
-#include "b_plus_tree.cpp"
-#include "record.cpp"
-#include "search.cpp"
 
 #include <iostream>
 #include <fstream>

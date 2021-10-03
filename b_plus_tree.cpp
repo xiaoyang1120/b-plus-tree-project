@@ -1,6 +1,5 @@
 #include "b_plus_tree.h"
 #include "tree_node.h"
-#include "tree_node.cpp"
 
 #include <iostream>
 #include <cstddef>
