@@ -76,11 +76,7 @@ void BPlusTree::displayNode(TreeNode *cursor)
     {
         cout << cursor->getKey(i) << " ";
     }
-
-    // for (int i = 0; i <= cursor->getNumOfKeys(); i++)
-    // {
-    //     cout << cursor->getPointer(i) << " ";
-    // }
+    cout << endl;
 }
 
 void BPlusTree::insert(int value)
