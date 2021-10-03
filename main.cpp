@@ -20,7 +20,7 @@ using namespace std;
 
 int main()
 {    
-    int BLOCKSIZE = 100;
+    int BLOCKSIZE = 500;
     MemoryPool disk(150000000, BLOCKSIZE);  // 150MB
     MemoryPool index(350000000, BLOCKSIZE); // 350MB
 
