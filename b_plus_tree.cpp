@@ -205,7 +205,6 @@ void BPlusTree::insert(int value)
         // last pointer of right node points to the original right node of left node
         // newLeafNode->setPointer(newLeafNode->getNumOfKeys(), cursor->getPointer(this->maxKeys));
         newLeafNode->setPointer(newLeafNode->getNumOfKeys(), virtualPointers[this->maxKeys + 1]);
-        cout << "insert: " << value << " left next: " << cursor->getPointer(cursor->getNumOfKeys()) << " right next: " <<virtualPointers[this->maxKeys + 1] << " ";
         cursor->setPointer(this->maxKeys, NULL);
 
         // remove the useless pointers in left node

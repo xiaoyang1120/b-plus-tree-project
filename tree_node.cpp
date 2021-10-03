@@ -71,6 +71,5 @@ int TreeNode::calculateMaxKeys(size_t blockSize)
         sum += sizeof(int) + sizeof(TreeNode*);
     }
     
-    // return maxKeys;
-    return 3;
+    return maxKeys;
 }
