@@ -1,6 +1,7 @@
 #include "record.h"
 #include <vector>
 #include <iostream>
+#include <cstring>
 
 using namespace std;
 
